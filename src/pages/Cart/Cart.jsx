@@ -1,4 +1,4 @@
-import { Box, Button, Skeleton, Stack, Typography } from "@mui/material";
+import { Box, Button, createTheme, Skeleton, Stack, ThemeProvider, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCartItems } from "../../services/cartApi";
@@ -21,6 +21,13 @@ export default function Cart() {
   const handleIncrease = () => {
     // setQuantity(quantity + 1);
   };
+  const themeC = createTheme({
+    palette: {
+      primary: {
+        main: "#4b2a19",
+      },
+    },
+  });
   return (
     <>
       <Stack minHeight={"90vh"} p={{ xs: 1, md: 10 }} gap={2}>
@@ -76,34 +83,37 @@ export default function Cart() {
                                     p={{ xs: 0.5, md: 1 }}
                                     borderRadius={2}
                                   >
-                                    <Button
-                                      variant="outlined"
-                                      size="small"
-                                      sx={{
-                                        minWidth: 24,
-                                        fontSize: "0.75rem",
-                                        lineHeight: 1,
-                                      }}
-                                      onClick={handleDecrease}
-                                    >
-                                      -
-                                    </Button>
-                                    <Box minWidth={24} textAlign="center">
-                                      {item?.quantity}
-                                    </Box>
-                                    <Button
-                                      variant="outlined"
-                                      size="small"
-                                      sx={{
-                                        minWidth: 24,
-                                        padding: "2px",
-                                        fontSize: "0.75rem",
-                                        lineHeight: 1,
-                                      }}
-                                      onClick={handleIncrease}
-                                    >
-                                      +
-                                    </Button>
+                                    <ThemeProvider theme={themeC}>
+                                      <Button
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                          minWidth: 24,
+                                          fontSize: "0.75rem",
+                                          lineHeight: 1,
+                                        }}
+                                        onClick={handleDecrease}
+                                      >
+                                        -
+                                      </Button>
+                                      <Box minWidth={24} textAlign="center" color={"var(--primary)"}>
+                                        {item?.quantity}
+                                      </Box>
+
+                                      <Button
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                          minWidth: 24,
+                                          padding: "2px",
+                                          fontSize: "0.75rem",
+                                          lineHeight: 1,
+                                        }}
+                                        onClick={handleIncrease}
+                                      >
+                                        +
+                                      </Button>
+                                    </ThemeProvider>
                                   </Box>
                                 </Stack>
                                 <Box

@@ -91,7 +91,7 @@ const Favorites = () => {
   return (
     <Box
       sx={{
-        py: 4,
+        padding: "70px 0",
       }}
     >
       <Container fixed>
@@ -187,7 +187,7 @@ const Favorites = () => {
             <Button
               variant="contained"
               startIcon={<ArrowBack />}
-              href="/menu"
+              href="/menu-items"
               sx={{
                 background:
                   "linear-gradient(45deg, var(--light-color) 20%, var(--primary) 70%)",

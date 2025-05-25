@@ -1,61 +1,61 @@
 import React from "react";
-import { Box, Typography, Grid, Container, Button } from "@mui/material";
-import About from "../../assets/about-bg.png";
+import { Box, Typography, Grid, Container } from "@mui/material";
 
-const AboutBg = () => {
+const AboutBg = ({ title = "About", subtitle = "Home - About", backgroundImage }) => {
   return (
-    <>
-      <Box
-        sx={{
-          background: `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(57, 27, 3, 0.5)), url(${About})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          height: "45vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          overflow: "hidden",
-        }}>
-        <Container>
+    <Box
+      sx={{
+        background: `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(57, 27, 3, 0.5)), url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        height: "45vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        overflow: "hidden",
+      }}>
+      <Container>
+        <Grid
+          container
+          spacing={{ xs: 0, md: 4 }}
+          direction="column"
+          sx={{
+            justifyContent: "center",
+            alignItems: "center",
+          
+          }}>
           <Grid
-            container
-            spacing={{ xs: 0, md: 4 }}
+            item
+            xs={12}
             sx={{
-              justifyContent: "between",
-              alignItems: "center",
-              verticalAlign: "middle",
+              textAlign: "center",
             }}>
-            <Grid
-              size={{ xs: 12 }}
-              sx={{
-                textAlign: "center",
-              }}>
-              <Typography
-                variant="h4"
-                color="white"
-                sx={{ fontSize: { xs: "2rem", md: "3rem" } }}>
-                <strong>About</strong>
-              </Typography>
-            </Grid>
-            <Grid
-              size={{ xs: 12 }}
-              sx={{
-                textAlign: "center",
-              }}>
-              <Typography
-                variant="body1"
-                color="white"
-                sx={{
-                  fontWeight: "700",
-                  fontSize: { xs: "1.1rem", md: "1.3rem" },
-                }}>
-                Home - About
-              </Typography>
-            </Grid>
+            <Typography
+              variant="h4"
+              color="white"
+              sx={{ fontSize: { xs: "2rem", md: "3rem" } }}>
+              <strong>{title}</strong>
+            </Typography>
           </Grid>
-        </Container>
-      </Box>
-    </>
+          <Grid
+            item
+            xs={12}
+            sx={{
+              textAlign: "center",
+            }}>
+            <Typography
+              variant="body1"
+              color="white"
+              sx={{
+                fontWeight: "700",
+                fontSize: { xs: "1.1rem", md: "1.3rem" },
+              }}>
+              {subtitle}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 };
 

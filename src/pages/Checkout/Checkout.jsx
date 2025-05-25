@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
-  const isMobile = useMediaQuery("(max-width:600px)");
+  // const isMobile = useMediaQuery("(max-width:600px)");
   const { getCartItems, createOrder, getShippingPrice, checkout } = useOrders();
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponCode, setCouponCode] = useState("");

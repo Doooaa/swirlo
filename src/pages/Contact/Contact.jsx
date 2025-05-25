@@ -13,17 +13,18 @@ import {
   OutlinedInput,
   FormHelperText,
 } from "@mui/material";
+import contactImage from  "../../assets/contactus.jpg";
+import AboutBg from "../../components/AboutSec/AboutBg";
 export default function Contact() {
   return <>
-     <Box sx={{Height:"100dvh" ,backgroundColor:"red"}}>
-
-    <Typography variant="h4">Contact us</Typography>
- 
-
-     </Box>
   
-    
+      <AboutBg
+        title="Contact Us"
+        subtitle="Home / Contact Us"
+        backgroundImage={contactImage}
+      />
   </>;
+  
 }
 
 

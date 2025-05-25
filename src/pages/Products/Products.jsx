@@ -10,31 +10,30 @@ import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { useProductsContext } from "../../context/ProductsContext";
 import FilterationSideNav from "../../components/FilterationSideNav/FilterationSideNav";
 import { filterProducts } from "../../services/productsApi";
+import { useCart } from "../../context/CartContext";
 
 export default function Products() {
   const { products, isLoading, isError, error, page, setPage } =
     useProductsContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToCart } = useCart();
 
   const handleProductClick = (id) => {
     navigate(`/menu-items/${id}`);
   };
 
-  // * get products
-  // const [page, setPage] = useState(1);
-  // const limit = 12;
-
-  // const {
-  //   data: {
-  //     data: { data: products = [], totalPages = 1, currentPage = 1 } = {},
-  //   } = {},
-  //   isLoading,
-  //   error: productErr,
-  // } = useQuery({
-  //   queryKey: ["products", page],
-  //   queryFn: () => fetchProducts(page, limit),
-  // });
+  // check user is logged ?
+  const user = localStorage.getItem("user");
+  // add to cart
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+    toast.success("item added to cart successfully");
+    addToCart(prd._id);
+  };
 
   // Handle Favourites
   const {
@@ -197,7 +196,7 @@ export default function Products() {
                   label: prd.label || "no label",
                   _id: prd._id,
                 }}
-                onAddToCart={(id) => console.log("Add to cart:", id)}
+                onAddToCart={handleAddToCart}
                 onToggleFavorite={(id) => toggleWishlist(id)}
                 onProductClick={handleProductClick}
                 sx={{ width: "290px", aspectRatio: "2/3", height: "66%" }}

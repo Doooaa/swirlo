@@ -8,24 +8,62 @@ import { toast } from "react-toastify";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { red } from "@mui/material/colors";
+import { useFavoritesContext } from "../../context/FavoritesContext";
+import { useCart } from "../../context/CartContext";
 
 export default function ProductDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const { getProductDetails } = useProductsContext();
   const { data: product, isLoading, isError, error } = getProductDetails(id);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [favorited, setFavorited] = useState(false);
+  const { addToCart } = useCart();
+  const { addToFav, removeFromFav, isFavorited } = useFavoritesContext();
+
+  useEffect(() => {
+    if (id) {
+      setFavorited(isFavorited(id));
+    }
+  }, [id, isFavorited]);
 
   if (isLoading) return <LoadingSpinner />;
-  if (isError) return toast.error(`Error: ${error.message}`);
-  if (!product.data[0]) return toast.error(`product Not Found`);
+
+  if (isError) {
+    toast.error(`Error: ${error.message}`);
+    return null;
+  }
+
+  if (!product?.data?.[0]) {
+    toast.error(`Product Not Found`);
+    return null;
+  }
 
   const prd = product.data[0];
 
-  const handleFavoriteClick = () => {
-    setIsFavorited(!isFavorited);
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation();
+    if (isFavorited(id)) {
+      removeFromFav(id);
+      setFavorited(false);
+    } else {
+      addToFav(id);
+      setFavorited(true);
+    }
+  };
+  // check user is logged ?
+  const user = localStorage.getItem("user");
+
+  // add to cart
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+    toast.success("item added to cart successfully");
+    addToCart(prd._id);
   };
 
   console.log(product);
@@ -37,8 +75,7 @@ export default function ProductDetails() {
           flexDirection: { xs: "column", md: "row" },
           p: { xs: 2, md: 6 },
           overflowX: "hidden",
-        }}
-      >
+        }}>
         {/* Image Section */}
         <Box
           sx={{
@@ -46,8 +83,7 @@ export default function ProductDetails() {
             flex: 1,
             width: "100%",
             height: { xs: "60vh", sm: "430px", md: "75vh", lg: "75vh" },
-          }}
-        >
+          }}>
           <img
             src={prd.thumbnail}
             alt="coffee shop"
@@ -72,8 +108,7 @@ export default function ProductDetails() {
             py: { xs: 2, md: 4 },
             alignItems: { xs: "center", md: "flex-start" },
             textAlign: { xs: "center", md: "left" },
-          }}
-        >
+          }}>
           <Box
             sx={{
               display: "flex",
@@ -81,8 +116,7 @@ export default function ProductDetails() {
               justifyContent: "space-between",
               alignItems: "center",
               width: "100%",
-            }}
-          >
+            }}>
             <Typography
               variant="h3"
               sx={{
@@ -90,18 +124,17 @@ export default function ProductDetails() {
                 fontSize: { xs: "1.75rem", sm: "2rem", md: "2.5rem" },
                 color: "var(--primary)",
                 fontFamily: "Pacifico, cursive",
-              }}
-            >
+              }}>
               {prd.title}
             </Typography>
 
             {/* Add to Fav */}
             <IconButton onClick={handleFavoriteClick}>
-              {isFavorited ? (
+              {favorited ? (
                 <FavoriteIcon sx={{ fontSize: "2.5rem", color: red[800] }} />
               ) : (
                 <FavoriteBorderOutlinedIcon
-                  sx={{ fontSize: "2.5rem", color: "var( --primary)" }}
+                  sx={{ fontSize: "2.5rem", color: "var(--primary)" }}
                 />
               )}
             </IconButton>
@@ -123,8 +156,7 @@ export default function ProductDetails() {
             sx={{
               mb: 2,
               color: "var(--tertiary)",
-            }}
-          >
+            }}>
             Ingredients
           </Typography>
 
@@ -133,8 +165,7 @@ export default function ProductDetails() {
             sx={{
               mb: 4,
               color: "var(--main-text)",
-            }}
-          >
+            }}>
             {prd.description}
           </Typography>
 
@@ -145,12 +176,12 @@ export default function ProductDetails() {
               fontWeight: "700",
               color: "var(--primary)",
               fontFamily: "Playpen Sans Hebrew",
-            }}
-          >
+            }}>
             Price: {prd.price}
           </Typography>
 
           <Button
+            onClick={handleAddToCart}
             sx={{
               width: { xs: "80%", sm: "80%" },
               p: 2,
@@ -169,8 +200,7 @@ export default function ProductDetails() {
               "&:hover": {
                 bgcolor: "var(--main-text)",
               },
-            }}
-          >
+            }}>
             <ShoppingCartIcon />
             Add To Cart
           </Button>
@@ -179,9 +209,11 @@ export default function ProductDetails() {
       <Review></Review>
       <Box sx={{ maxWidth: "1200px", mx: "auto", px: { xs: 2, md: 6 } }}>
         <RelatedProducts
-          categoryId={"6812879bbcafe5c8e6084e62"}
-          currentProductId={"6830e8a24b950461489ae1ca"}
-          onProductClick={(id) => navigate(`/menu-items/${id}`)}
+          categoryId={prd.categoryID}
+          currentProductId={prd._id}
+          onProductClick={(prd) => {
+            navigate(`/menu-items/${prd}`);
+          }}
         />
       </Box>
     </Box>

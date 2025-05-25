@@ -20,6 +20,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import Badge from "@mui/material/Badge";
+import { useFavoritesContext } from "../../context/FavoritesContext";
 
 import logoImg from "../../assets/logo3.png";
 
@@ -31,6 +33,8 @@ const Navbar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  const { favorites } = useFavoritesContext();
 
   const navigate = useNavigate();
 
@@ -175,9 +179,10 @@ const Navbar = () => {
                 }}>
                 <AccountCircleIcon />
               </IconButton>
+
               <IconButton
                 component={RouterLink}
-                to={"/favorites"}
+                to="/favorites"
                 sx={{
                   color:
                     location.pathname === "/favorites"
@@ -187,7 +192,22 @@ const Navbar = () => {
                     color: "var(--primary)",
                   },
                 }}>
-                <FavoriteBorderIcon />
+                <Badge
+                  badgeContent={favorites.length}
+                  color="error"
+                  invisible={favorites.length === 0}
+                  overlap="circular"
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      top: 3,
+                      right: 0,
+                      fontSize: "0.65rem",
+                      height: "18px",
+                      minWidth: "18px",
+                    },
+                  }}>
+                  <FavoriteBorderIcon />
+                </Badge>
               </IconButton>
               <IconButton
                 component={RouterLink}

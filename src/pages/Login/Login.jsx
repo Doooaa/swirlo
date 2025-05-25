@@ -30,6 +30,7 @@ export default function Login() {
   const navigate = useNavigate();
   const onSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
+    toast.success("Login successful");
     handleLoginSuccess(decoded, credentialResponse.credential, navigate);
   };
   
@@ -40,6 +41,7 @@ export default function Login() {
   };
 
   const onError = () => {
+    toast.success("Login successful");
     handelLoginError();
   };
 

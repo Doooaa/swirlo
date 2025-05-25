@@ -4,7 +4,7 @@ import {
   TextField,
   Button,
   Typography,
-  useMediaQuery,
+
   MenuItem,
 } from "@mui/material";
 import { useFormik } from "formik";
@@ -12,10 +12,9 @@ import * as Yup from "yup";
 import Coupons from "../../components/Coupons/Coupons";
 import MultiCardSlider from "../../components/slider/slider";
 import { useOrders } from "../../context/OrdersContext";
-import { applyCoupon } from "../../services/couponApi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import beans from "../../assets/beans.png";
+// import beans from "../../assets/beans.png";
 export default function Checkout() {
   // const isMobile = useMediaQuery("(max-width:600px)");
   const { getCartItems, createOrder, getShippingPrice, checkout } = useOrders();
@@ -92,18 +91,9 @@ export default function Checkout() {
       }
     },
   });
-
-  const handleCouponApply = async (code) => {
-    try {
-      const res = await applyCoupon(code);
-      console.log("res copuon is==>🟢❤=>" + res.data);
-      const { couponCode: returnedCode, discount } = res.data;
-      setCouponCode(returnedCode);
-      setCouponDiscount(discount);
-    } catch (err) {
-      console.error("Failed to apply coupon", err);
-      toast.error("Invalid or expired coupon code");
-    }
+  const handleCouponApply = ({ couponCode, discount }) => {
+    setCouponCode(couponCode);
+    setCouponDiscount(discount);
   };
 
   function handlePayNow() {
@@ -208,8 +198,9 @@ export default function Checkout() {
       <Box
         sx={{
           flex: 1,
-          
-          background: "linear-gradient(0deg, rgb(171, 132, 90), rgba(255, 255, 255, 0.74))",
+
+          background:
+            "linear-gradient(0deg, rgb(171, 132, 90), rgba(255, 255, 255, 0.74))",
           borderRadius: 2,
           p: 4,
           display: "flex",
@@ -266,7 +257,8 @@ export default function Checkout() {
             onClick={handlePayNow}
             disabled={loading} // Disable button when loading
           >
-            {loading ? "Processing..." : "Pay Now"} {/* Show loading text when in loading state */}
+            {loading ? "Processing..." : "Pay Now"}{" "}
+            {/* Show loading text when in loading state */}
           </Button>
 
           <Box

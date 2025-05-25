@@ -7,6 +7,8 @@ import "swiper/css/navigation";
 import ProductCard from "../ProductCard/ProductCard";
 import { useProductsContext } from "../../context/ProductsContext";
 import { useState, useEffect } from "react";
+// import { useCartContext } from "../../context/CartContext";
+import { useFavoritesContext } from "../../context/FavoritesContext";
 
 export default function RelatedProducts({
   categoryId,
@@ -14,6 +16,9 @@ export default function RelatedProducts({
   onProductClick,
 }) {
   const { products, isLoading, isError } = useProductsContext();
+  // const { addToCart } = useCartContext();
+  const { addToFav, removeFromFav, isFavorited } = useFavoritesContext();
+
   const [cardsPerView, setCardsPerView] = useState(1);
 
   const updateCardsPerView = () => {
@@ -41,8 +46,18 @@ export default function RelatedProducts({
   if (!relatedProducts?.length) return null;
 
   const slidesToShow = Math.min(cardsPerView, relatedProducts.length);
-  const handleSlideChange = (swiper) => {
-    setCurrentIndex(swiper.activeIndex);
+
+  const handleAddToCart = (productId) => {
+    // addToCart(productId);
+    console.log(`Product ${productId} added to cart`);
+  };
+
+  const handleToggleFavorite = (productId) => {
+    if (isFavorited(productId)) {
+      removeFromFav(productId);
+    } else {
+      addToFav(productId);
+    }
   };
 
   return (
@@ -61,7 +76,6 @@ export default function RelatedProducts({
         className="related-swiper"
         spaceBetween={20}
         slidesPerView={slidesToShow}
-        onSlideChange={handleSlideChange}
         navigation={true}
         modules={[Navigation]}
         style={{
@@ -81,10 +95,8 @@ export default function RelatedProducts({
               }}>
               <ProductCard
                 product={product}
-                onAddToCart={() => console.log("Add to cart:", product._id)}
-                onToggleFavorite={() =>
-                  console.log("Toggle favorite:", product._id)
-                }
+                onAddToCart={() => handleAddToCart(product._id)}
+                onToggleFavorite={() => handleToggleFavorite(product._id)}
                 onProductClick={onProductClick}
                 sx={{ width: "250px", aspectRatio: "2/3", height: "66%" }}
               />

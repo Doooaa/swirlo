@@ -44,6 +44,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import Search from "./pages/Search/Search.jsx";
 import ProductsContextProvider from "./context/ProductsContext.jsx";
+import FavoritesContextProvider from "./context/FavoritesContext.jsx";
 import CategoryProducts from "./pages/CategoryProducts/CategoryProducts.jsx";
 import ArrowUp from "../src/components/ArrowUp/ArrowUp.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
@@ -99,7 +100,6 @@ const router = createBrowserRouter([
         path: "order-confirmation/:id",
         element: <OrderConfirmation></OrderConfirmation>,
       },
-      { path: "menu-items", element: <Products></Products> },
       { path: "menu-items/:id", element: <ProductDetails></ProductDetails> },
       { path: "menu-items/:category", element: <CategoryProducts /> },
 
@@ -142,20 +142,19 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
           <CartContextProvider>
-            {/* <FavoritesContextProvider> */}
-            <CategoriesContextProvider>
-              <ProductsContextProvider>
-                <OrdersContextProvider>
-                  <ToastContainer />
-                  <ArrowUp />
 
+            <FavoritesContextProvider>
+              <CategoriesContextProvider>
+                <ProductsContextProvider>
+                  <OrdersContextProvider>
+                    <ToastContainer />
+                      <ArrowUp />
                   {/* <Toaster position="top-right" reverseOrder={false} /> */}
-                  <RouterProvider router={router} />
-                </OrdersContextProvider>
-              </ProductsContextProvider>
-            </CategoriesContextProvider>
-
-            {/* </FavoritesContextProvider> */}
+                      <RouterProvider router={router} />
+                   </OrdersContextProvider>
+                </ProductsContextProvider>
+              </CategoriesContextProvider>
+            </FavoritesContextProvider>
           </CartContextProvider>
         </AuthContextProvider>
       </QueryClientProvider>

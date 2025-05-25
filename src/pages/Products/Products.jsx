@@ -23,21 +23,6 @@ export default function Products() {
     navigate(`/menu-items/${id}`);
   };
 
-  // * get products
-  // const [page, setPage] = useState(1);
-  // const limit = 12;
-
-  // const {
-  //   data: {
-  //     data: { data: products = [], totalPages = 1, currentPage = 1 } = {},
-  //   } = {},
-  //   isLoading,
-  //   error: productErr,
-  // } = useQuery({
-  //   queryKey: ["products", page],
-  //   queryFn: () => fetchProducts(page, limit),
-  // });
-
   // check user is logged ?
   const user = localStorage.getItem("user");
   // add to cart

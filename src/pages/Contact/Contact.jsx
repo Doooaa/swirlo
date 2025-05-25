@@ -15,6 +15,8 @@ import {
 } from "@mui/material";
 import contactImage from  "../../assets/contactus.jpg";
 import AboutBg from "../../components/AboutSec/AboutBg";
+import ContactInfo from "../../components/conactInfo/contactInfo";
+
 export default function Contact() {
   return <>
   
@@ -23,6 +25,9 @@ export default function Contact() {
         subtitle="Home / Contact Us"
         backgroundImage={contactImage}
       />
+      <ContactInfo></ContactInfo>
+      
+
   </>;
   
 }

@@ -28,7 +28,6 @@ export default function Coupons({ onApplyCoupon }) {
       try {
         setLoading(true);
         setFeedback({ message: "", success: null });
-
         const response = await applyCoupon({ couponCode: values.coupon });
 
         // Trigger parent function with coupon code and discount

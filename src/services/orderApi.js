@@ -20,3 +20,8 @@ export const checkout = async (sessionId) => {
     }
   }
 };
+
+export async function getOrderDetails(id) {
+  const response = await api.get(`/orders/${id}`);
+  return response.data;
+}

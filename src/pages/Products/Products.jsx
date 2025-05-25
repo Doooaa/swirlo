@@ -175,7 +175,7 @@ export default function Products() {
           </Typography>
         </Box>
       ) : (
-        <div>
+        <Box sx={{ paddingLeft: { md: "290px" } }}>
           <Box
             sx={{
               display: "flex",
@@ -184,7 +184,6 @@ export default function Products() {
               gap: 4,
               justifyContent: "center",
               marginY: 4,
-              paddingLeft: { md: "290px" },
             }}
           >
             {displayProducts?.map((prd) => (
@@ -204,13 +203,13 @@ export default function Products() {
                 sx={{ width: "290px", aspectRatio: "2/3", height: "66%" }}
               />
             ))}
-            <PaginationComponent
-              currentPage={products.currentPage}
-              handlePagination={handlePagination}
-              totalPages={displayTotalPages}
-            />
           </Box>
-        </div>
+          <PaginationComponent
+            currentPage={products.currentPage}
+            handlePagination={handlePagination}
+            totalPages={displayTotalPages}
+          />
+        </Box>
       )}
     </div>
   );

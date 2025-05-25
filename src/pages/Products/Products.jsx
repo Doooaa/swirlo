@@ -2,37 +2,43 @@ import { useEffect, useState } from "react";
 import PaginationComponent from "../../components/Pagination/PaginationComp";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import { useNavigate } from "react-router";
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import favoritesServices from "../../services/favorites";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { fetchProducts } from "../../services/productsApi";
 import { useProductsContext } from "../../context/ProductsContext";
 
 export default function Products() {
-  const {
-    products = [],
-    isLoading,
-    isError,
-    page,
-    setPage,
-  } = useProductsContext();
+  const { products, isLoading, isError,error, page, setPage } = useProductsContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // function handlePagination(value) {
-  //   setCurrentPage(value);
-  //   //handle logic api here to get data also or useEffect with setCurrentPage dependency
-  // }
-
   const handleProductClick = (id) => {
-    navigate(`/products/${id}`);
+    navigate(`/menu-items/${id}`);
   };
+
+  // * get products
+  // const [page, setPage] = useState(1);
+  // const limit = 12;
+
+  // const {
+  //   data: {
+  //     data: { data: products = [], totalPages = 1, currentPage = 1 } = {},
+  //   } = {},
+  //   isLoading,
+  //   error: productErr,
+  // } = useQuery({
+  //   queryKey: ["products", page],
+  //   queryFn: () => fetchProducts(page, limit),
+  // });
 
   // Handle Favourites
   const {
     data: { favorites = [] } = {},
     isFetched,
-    error,
+    error: favError,
   } = useQuery({
     queryKey: ["favorites"],
     queryFn: () => favoritesServices.fetchAllFavorites(),
@@ -78,28 +84,16 @@ export default function Products() {
     }
   };
 
-  // if (error) {
-  //   toast.error(error.message || "Failed to fetch products");
-  // }
+  function handlePagination(value) {
+    setPage(value);
+  }
 
-  // Handle Pagination
-  console.log("Pagination data:", {
-    currentPage: page,
-    totalPages: products?.pagination?.totalPages,
-    productsCount: products?.data?.length,
-  });
+  if (isLoading) return <LoadingSpinner />;
+  if (error || favError)
+    return toast.error(error.message || "Failed to fetch products");
 
-  const handlePagination = (newPage) => {
-    setPage(newPage);
-  };
-
-  if (isLoading) return <p>Loading....</p>;
-  if (isError)
-    return <p>Error loading Products: {error?.message || "Unknown error"}</p>;
-
-  console.log(products.data);
   return (
-    <div>
+    <Container fixed>
       <Box
         sx={{
           display: "flex",
@@ -110,7 +104,7 @@ export default function Products() {
           marginY: 4,
         }}
       >
-        {products?.map((prd) => (
+        {products?.data?.map((prd) => (
           <ProductCard
             key={prd._id}
             product={{
@@ -130,10 +124,10 @@ export default function Products() {
       </Box>
 
       <PaginationComponent
-        currentPage={page}
-        totalPages={products?.totalPages || 1}
+        currentPage={products.currentPage}
+        totalPages={products.totalPages}
         handlePagination={handlePagination}
       />
-    </div>
+    </Container>
   );
 }

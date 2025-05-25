@@ -1,22 +1,76 @@
 import { Typography, Box, IconButton, Button } from "@mui/material";
 import Review from "../../components/Review/Review";
 import RelatedProducts from "../../components/RelatedProducts/RelatedProducts";
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 import { useProductsContext } from "../../context/ProductsContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { red } from "@mui/material/colors";
+import { useCart } from "../../context/CartContext";
+import favoritesServices from "../../services/favorites";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function ProductDetails() {
   const { id } = useParams();
-
   const { getProductDetails } = useProductsContext();
   const { data: product, isLoading, isError, error } = getProductDetails(id);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const { addToCart } = useCart();
+  const queryClient = useQueryClient();
+
+  // Handle Favourites
+  const {
+    data: { favorites = [] } = {},
+    isFetched,
+    error: favError,
+  } = useQuery({
+    queryKey: ["favorites"],
+    queryFn: () => favoritesServices.fetchAllFavorites(),
+  });
+
+  const [favArr, setFavArr] = useState([]);
+
+  useEffect(() => {
+    if (isFetched) {
+      setFavArr([...favorites.map((item) => item._id)]);
+    }
+  }, [isFetched, favorites]);
+
+  const { mutateAsync: removeFromFavorites, isPending: isRemoving } =
+    useMutation({
+      mutationFn: (id) => favoritesServices.removeFromFavorites(id),
+      onSuccess: (data) => {
+        setFavArr([...data.favorites]);
+        queryClient.invalidateQueries(["favorites"]);
+        toast.success("Item removed from favorites!");
+      },
+      onError: (error) => {
+        toast.error(`Failed to remove: ${error.message}`);
+      },
+    });
+  const { mutateAsync: addToFavorites, isPending: isAdding } = useMutation({
+    mutationFn: (id) => favoritesServices.addToFavorites(id),
+    onSuccess: (data) => {
+      setFavArr([...data.favorites]);
+      queryClient.invalidateQueries(["favorites"]);
+      toast.success("Item Added To Your favorites!");
+    },
+    onError: (error) => {
+      toast.error(`Failed to add: ${error.message}`);
+    },
+  });
+
+  const handleFavoriteClick = (id) => {
+    if (favArr.includes(id)) {
+      removeFromFavorites(id);
+    } else {
+      addToFavorites(id);
+    }
+  };
+  
 
   if (isLoading) return <LoadingSpinner />;
   if (isError) return toast.error(`Error: ${error.message}`);
@@ -24,8 +78,17 @@ export default function ProductDetails() {
 
   const prd = product.data[0];
 
-  const handleFavoriteClick = () => {
-    setIsFavorited(!isFavorited);
+  // check user is logged ?
+  const user = localStorage.getItem("user");
+
+  // add to cart
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+    toast.success("item added to cart successfully");
+    addToCart(prd._id);
   };
 
   console.log(product);
@@ -96,12 +159,12 @@ export default function ProductDetails() {
             </Typography>
 
             {/* Add to Fav */}
-            <IconButton onClick={handleFavoriteClick}>
-              {isFavorited ? (
+            <IconButton onClick={() => handleFavoriteClick(prd._id)}>
+              {favArr.includes(prd._id) ? (
                 <FavoriteIcon sx={{ fontSize: "2.5rem", color: red[800] }} />
               ) : (
                 <FavoriteBorderOutlinedIcon
-                  sx={{ fontSize: "2.5rem", color: "var( --primary)" }}
+                  sx={{ fontSize: "2.5rem", color: "var(--primary)" }}
                 />
               )}
             </IconButton>
@@ -151,6 +214,7 @@ export default function ProductDetails() {
           </Typography>
 
           <Button
+            onClick={handleAddToCart}
             sx={{
               width: { xs: "80%", sm: "80%" },
               p: 2,
@@ -181,7 +245,7 @@ export default function ProductDetails() {
         <RelatedProducts
           categoryId={"6812879bbcafe5c8e6084e62"}
           currentProductId={"6830e8a24b950461489ae1ca"}
-          onProductClick={(id) => navigate(`/menu-items/${id}`)}
+          onProductClick={(id) => Navigate(`/menu-items/${id}`)}
         />
       </Box>
     </Box>

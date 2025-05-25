@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardMedia,
@@ -11,6 +11,7 @@ import {
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { styled } from "@mui/material/styles";
+import { useFavoritesContext } from "../../context/FavoritesContext";
 
 // Styled components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -25,7 +26,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const OverlayBox = styled(Box)({
+const OverlayBox = styled(Box)(({ hover }) => ({
   position: "absolute",
   top: 0,
   left: 0,
@@ -35,10 +36,10 @@ const OverlayBox = styled(Box)({
   alignItems: "center",
   justifyContent: "center",
   backgroundColor: "rgba(0, 0, 0, 0.4)",
-  opacity: 0,
+  opacity: hover ? 1 : 0,
   transition: "opacity 0.4s",
-  "&:hover": { opacity: 1 },
-});
+  pointerEvents: hover ? "auto" : "none", // To prevent overlay blocking clicks when hidden
+}));
 
 const LabelChip = styled(Chip)({
   position: "absolute",
@@ -58,8 +59,7 @@ const StarRating = ({ rating = 0 }) => (
           color: i < rating ? "gold" : "gray",
           marginRight: "2px",
           fontSize: "1.3rem",
-        }}
-      >
+        }}>
         ★
       </Typography>
     ))}
@@ -74,36 +74,29 @@ const ProductCard = ({
   onProductClick,
 }) => {
   const [hover, setHover] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const { isFavorited } = useFavoritesContext();
 
-  const handleFavoriteClick = useCallback(
-    (e) => {
-      e.stopPropagation();
-      setIsFavorited((prev) => !prev);
-      onToggleFavorite?.(product._id);
-    },
-    [onToggleFavorite, product._id]
-  );
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation();
+    onToggleFavorite?.(product._id);
+  };
 
-  const handleAddToCartClick = useCallback(
-    (e) => {
-      e.stopPropagation();
-      onAddToCart?.(product._id);
-    },
-    [onAddToCart, product._id]
-  );
+  const handleAddToCartClick = (e) => {
+    e.stopPropagation();
+    onAddToCart?.(product._id);
+  };
 
   const handleClick = () => onProductClick?.(product._id);
 
   const labels = product?.label || [];
+  const favorited = isFavorited(product._id);
 
   return (
     <StyledCard
       sx={{ width: sx.width, aspectRatio: sx.aspectRatio }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={handleClick}
-    >
+      onClick={handleClick}>
       <Box position="relative" sx={{ height: sx.height, overflow: "hidden" }}>
         <CardMedia
           component="div"
@@ -114,8 +107,7 @@ const ProductCard = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-          }}
-        >
+          }}>
           <Box
             component="img"
             src={product.thumbnail}
@@ -156,23 +148,23 @@ const ProductCard = ({
           />
         )}
 
-        <OverlayBox>
+        <OverlayBox hover={hover}>
           <IconButton
             onClick={handleFavoriteClick}
             sx={{
-              color: isFavorited ? "var(--secondary)" : "white",
-              "&:hover": { color: "var(--secondary)" },
+              color: favorited ? "error.main" : "white",
+              "&:hover": { color: "error.main" },
             }}
-          >
+            aria-label="toggle favorite">
             <FavoriteIcon />
           </IconButton>
           <IconButton
             onClick={handleAddToCartClick}
             sx={{
               color: "white",
-              "&:hover": { color: "var(--secondary)" },
+              "&:hover": { color: "var(--accent)" },
             }}
-          >
+            aria-label="add to cart">
             <ShoppingCartIcon />
           </IconButton>
         </OverlayBox>
@@ -182,12 +174,20 @@ const ProductCard = ({
         <StarRating rating={product.avgRating} />
         <Typography
           variant="h6"
+          noWrap
           color="var(--primary)"
           sx={{ fontSize: "1.35rem" }}
-        >
+          title={product.title}>
           {product.title}
         </Typography>
-        <Typography variant="body1" sx={{ fontSize: "1.1rem", marginTop: 1 }}>
+        <Typography
+          variant="body1"
+          sx={{
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            marginTop: 1,
+            color: "var(--gold)",
+          }}>
           {product.price} EGP
         </Typography>
       </CardContent>

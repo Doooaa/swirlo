@@ -13,7 +13,9 @@ import Home from "./pages/Home/Home";
 import { lazy, Suspense } from "react";
 const AboutComponent = lazy(() => import("../src/pages/About/About.jsx"));
 import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
-const ContactsComponent = lazy(() => import("../src/pages/Contact/Contact.jsx"));
+const ContactsComponent = lazy(() =>
+  import("../src/pages/Contact/Contact.jsx")
+);
 const ProfileComponent = lazy(() => import("../src/pages/Profile/Profile.jsx"));
 import NotFound from "./pages/NotFound/NotFound";
 import Login from "./pages/Login/Login";
@@ -42,6 +44,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import Search from "./pages/Search/Search.jsx";
 import ProductsContextProvider from "./context/ProductsContext.jsx";
+import FavoritesContextProvider from "./context/FavoritesContext.jsx";
 import CategoryProducts from "./pages/CategoryProducts/CategoryProducts.jsx";
 import ArrowUp from "../src/components/ArrowUp/ArrowUp.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
@@ -97,7 +100,6 @@ const router = createBrowserRouter([
         path: "order-confirmation/:id",
         element: <OrderConfirmation></OrderConfirmation>,
       },
-      { path: "menu-items", element: <Products></Products> },
       { path: "menu-items/:id", element: <ProductDetails></ProductDetails> },
       { path: "menu-items/:category", element: <CategoryProducts /> },
 
@@ -140,17 +142,16 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
           <CartContextProvider>
-            {/* <FavoritesContextProvider> */}
-            <CategoriesContextProvider>
-              <ProductsContextProvider>
-                <ToastContainer />
-                <ArrowUp />
-                {/* <Toaster position="top-right" reverseOrder={false} /> */}
-                <RouterProvider router={router} />
-              </ProductsContextProvider>
-            </CategoriesContextProvider>
-
-            {/* </FavoritesContextProvider> */}
+            <FavoritesContextProvider>
+              <CategoriesContextProvider>
+                <ProductsContextProvider>
+                  <ToastContainer />
+                  <ArrowUp />
+                  {/* <Toaster position="top-right" reverseOrder={false} /> */}
+                  <RouterProvider router={router} />
+                </ProductsContextProvider>
+              </CategoriesContextProvider>
+            </FavoritesContextProvider>
           </CartContextProvider>
         </AuthContextProvider>
       </QueryClientProvider>

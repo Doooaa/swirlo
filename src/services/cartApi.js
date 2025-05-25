@@ -17,3 +17,10 @@ export const editQuantity = async ({ id, quantity }) => {
   console.log(response);
   return response.data;
 };
+export const addToCartApi = (productId) => {
+  return api.post(
+    "/cart",
+    { productId },
+   
+  );
+};

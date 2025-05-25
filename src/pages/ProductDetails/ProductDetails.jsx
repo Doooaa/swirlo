@@ -1,7 +1,7 @@
 import { Typography, Box, IconButton, Button } from "@mui/material";
 import Review from "../../components/Review/Review";
 import RelatedProducts from "../../components/RelatedProducts/RelatedProducts";
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 import { useProductsContext } from "../../context/ProductsContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
@@ -10,24 +10,39 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import { useState } from "react";
 import { red } from "@mui/material/colors";
+import { useCart } from "../../context/CartContext";
 
 export default function ProductDetails() {
   const { id } = useParams();
-
   const { getProductDetails } = useProductsContext();
   const { data: product, isLoading, isError, error } = getProductDetails(id);
   const [isFavorited, setIsFavorited] = useState(false);
+  const { addToCart } = useCart();
 
   if (isLoading) return <LoadingSpinner />;
   if (isError) return toast.error(`Error: ${error.message}`);
   if (!product.data[0]) return toast.error(`product Not Found`);
-
+ 
   const prd = product.data[0];
+  
+  // check user is logged ?
+  const user = localStorage.getItem("user");
 
+  // add to fav
   const handleFavoriteClick = () => {
     setIsFavorited(!isFavorited);
   };
 
+  // add to cart
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+    toast.success("item added to cart successfully");
+    addToCart(prd._id); 
+  };
+  
   console.log(product);
   return (
     <Box>
@@ -151,6 +166,7 @@ export default function ProductDetails() {
           </Typography>
 
           <Button
+            onClick={handleAddToCart}
             sx={{
               width: { xs: "80%", sm: "80%" },
               p: 2,
@@ -181,7 +197,7 @@ export default function ProductDetails() {
         <RelatedProducts
           categoryId={"6812879bbcafe5c8e6084e62"}
           currentProductId={"6830e8a24b950461489ae1ca"}
-          onProductClick={(id) => navigate(`/menu-items/${id}`)}
+          onProductClick={(id) => Navigate(`/menu-items/${id}`)}
         />
       </Box>
     </Box>

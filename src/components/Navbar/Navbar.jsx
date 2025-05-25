@@ -22,6 +22,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
 import { useFavoritesContext } from "../../context/FavoritesContext";
+import { useCart } from "../../context/CartContext";
 
 import logoImg from "../../assets/logo3.png";
 
@@ -35,6 +36,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { favorites } = useFavoritesContext();
+  const { data } = useCart();
 
   const navigate = useNavigate();
 
@@ -209,6 +211,7 @@ const Navbar = () => {
                   <FavoriteBorderIcon />
                 </Badge>
               </IconButton>
+
               <IconButton
                 component={RouterLink}
                 to={"/cart"}
@@ -221,7 +224,22 @@ const Navbar = () => {
                     color: "var(--primary)",
                   },
                 }}>
-                <ShoppingCartIcon />
+                <Badge
+                  badgeContent={data.data?.length || 0}
+                  color="error"
+                  invisible={data.data?.length === 0}
+                  overlap="circular"
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      top: 3,
+                      right: 0,
+                      fontSize: "0.65rem",
+                      height: "18px",
+                      minWidth: "18px",
+                    },
+                  }}>
+                  <ShoppingCartIcon />
+                </Badge>
               </IconButton>
             </Box>
           </Box>

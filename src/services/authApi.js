@@ -37,3 +37,11 @@ export const getCurrentUser = async () => {
   const res = await api.get("/users/me");
   return res.data;
 };
+
+
+// Post use google
+
+export const PostUserByGoogle = async () => {
+  const res = await api.post("/auth/login/google");
+  return res.data;
+};

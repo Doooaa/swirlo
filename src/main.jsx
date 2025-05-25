@@ -44,7 +44,6 @@ import Search from "./pages/Search/Search.jsx";
 import ProductsContextProvider from "./context/ProductsContext.jsx";
 import CategoryProducts from "./pages/CategoryProducts/CategoryProducts.jsx";
 import ArrowUp from "../src/components/ArrowUp/ArrowUp.jsx";
-import CartContextProvider from "./context/CartContext.jsx";
 
 // ^ routing setup
 const router = createBrowserRouter([
@@ -139,19 +138,17 @@ createRoot(document.getElementById("root")).render(
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
-          <CartContextProvider>
-            {/* <FavoritesContextProvider> */}
-            <CategoriesContextProvider>
-              <ProductsContextProvider>
-                <ToastContainer />
-                <ArrowUp />
-                {/* <Toaster position="top-right" reverseOrder={false} /> */}
-                <RouterProvider router={router} />
-              </ProductsContextProvider>
-            </CategoriesContextProvider>
+          {/* <FavoritesContextProvider> */}
+          <CategoriesContextProvider>
+            <ProductsContextProvider>
+              <ToastContainer />
+              <ArrowUp />
+              {/* <Toaster position="top-right" reverseOrder={false} /> */}
+              <RouterProvider router={router} />
+            </ProductsContextProvider>
+          </CategoriesContextProvider>
 
-            {/* </FavoritesContextProvider> */}
-          </CartContextProvider>
+          {/* </FavoritesContextProvider> */}
         </AuthContextProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>

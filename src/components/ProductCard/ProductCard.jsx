@@ -187,7 +187,7 @@ const ProductCard = ({
         >
           {product.title}
         </Typography>
-        <Typography variant="body1" sx={{ fontSize: "1.1rem",marginTop:1}}>
+        <Typography variant="body1" sx={{ fontSize: "1.1rem", marginTop: 1 }}>
           {product.price} EGP
         </Typography>
       </CardContent>

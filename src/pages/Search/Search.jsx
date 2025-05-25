@@ -1,71 +1,92 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Box, Container, Grid, Typography } from "@mui/material";
 import PaginationComponent from "../../components/Pagination/PaginationComp";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import favoritesServices from "../../services/favorites";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { searchProducts } from "../../services/productsApi";
+import { filterProducts } from "../../services/productsApi";
+import FilterationSideNav from "../../components/FilterationSideNav/FilterationSideNav";
 
-export default function Search() {
+function Search() {
   const [currentPage, setCurrentPage] = useState(1);
-
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q");
-
-  const {
-    data: {
-      data: searchedPro = [],
-      currentPage: serverCurrentPage = 1,
-      totalPages,
-    } = {},
-    isLoading: isSearching,
-    error,
-    isFetched: isProductsFetched,
-  } = useQuery({
-    queryKey: ["searchedProducts", query, currentPage],
-    queryFn: () => searchProducts(query, currentPage),
-    keepPreviousData: true,
-    enabled: !!query && query.length > 0,
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [filters, setFilters] = useState({
+    title: query || "",
+    price: 200,
   });
 
-  function handlePagination(value) {
-    setCurrentPage(value);
-  }
+  // Filter query with automatic refetch on dependencies change
+  const {
+    data: {
+      data: products = [],
+      totalPages = 1,
+      currentPage: serverCurrentPage = 1,
+    } = {},
+    isLoading,
+    isRefetching,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["filterProducts", filters, currentPage],
+    queryFn: () => filterProducts(filters, currentPage),
+    keepPreviousData: true,
+  });
 
-  const navigate = useNavigate();
+  // Handle filter changes
+  const handleFilterChange = useCallback((newFilters) => {
+    setCurrentPage(1);
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+  }, []);
 
-  const handleProductClick = (id) => {
-    navigate(`/products/${id}`);
+  // Handle pagination
+  const handlePagination = (page) => {
+    setCurrentPage(page);
   };
 
-  // ^ handle add to / remove from favorites
-  const queryClient = useQueryClient();
-  const { data: { favorites = [] } = {}, isFetched: isFavFetched } = useQuery({
+  // Favorites logic
+  const { data: favoritesData = {}, isFetched: isFavFetched } = useQuery({
     queryKey: ["favorites"],
-    queryFn: () => favoritesServices.fetchAllFavorites(),
+    queryFn: favoritesServices.fetchAllFavorites,
   });
 
   const [favArr, setFavArr] = useState([]);
 
   useEffect(() => {
-    if (isFavFetched && isFavFetched.length === 0) {
-      setFavArr([...favorites.map((item) => item._id)]);
+    if (isFavFetched && favoritesData.favorites) {
+      setFavArr(favoritesData.favorites.map((item) => item._id));
     }
+  }, [isFavFetched, favoritesData]);
 
-    if (isProductsFetched && searchedPro.length === 0) {
-      console.log("hi");
+  // Automatically update title filter when query changes
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, title: query || "" }));
+    setCurrentPage(1);
+  }, [query]);
 
-      toast.error("No products found that match your search!");
-    }
-  }, [isFavFetched, isProductsFetched]);
-
-  const { mutateAsync: removeFromFavorites } = useMutation({
-    mutationFn: (id) => favoritesServices.removeFromFavorites(id),
+  // Add to favorites mutation
+  const { mutateAsync: addToFavorites } = useMutation({
+    mutationFn: favoritesServices.addToFavorites,
     onSuccess: (data) => {
-      setFavArr([...data.favorites]);
+      setFavArr(data.favorites.map((item) => item._id));
+      queryClient.invalidateQueries(["favorites"]);
+      toast.success("Item added to favorites!");
+    },
+    onError: (error) => {
+      toast.error(`Failed to add: ${error.message}`);
+    },
+  });
+
+  // Remove from favorites mutation
+  const { mutateAsync: removeFromFavorites } = useMutation({
+    mutationFn: favoritesServices.removeFromFavorites,
+    onSuccess: (data) => {
+      setFavArr(data.favorites.map((item) => item._id));
       queryClient.invalidateQueries(["favorites"]);
       toast.success("Item removed from favorites!");
     },
@@ -73,18 +94,8 @@ export default function Search() {
       toast.error(`Failed to remove: ${error.message}`);
     },
   });
-  const { mutateAsync: addToFavorites } = useMutation({
-    mutationFn: (id) => favoritesServices.addToFavorites(id),
-    onSuccess: (data) => {
-      setFavArr([...data.favorites]);
-      queryClient.invalidateQueries(["favorites"]);
-      toast.success("Item Added To Your favorites!");
-    },
-    onError: (error) => {
-      toast.error(`Failed to add: ${error.message}`);
-    },
-  });
 
+  // Toggle favorites
   const toggleWishlist = (id) => {
     if (favArr.includes(id)) {
       removeFromFavorites(id);
@@ -93,15 +104,41 @@ export default function Search() {
     }
   };
 
-  if (isSearching) return <LoadingSpinner></LoadingSpinner>;
+  // Handle product click
+  const handleProductClick = (id) => {
+    navigate(`/products/${id}`);
+  };
 
-  if (error) {
-    toast.error(error.response.data.message || "Failed to fetch products");
-  }
+  // Main render
+  return (
+    <Box>
+      <FilterationSideNav onFilterChange={handleFilterChange} />
+      {error ? (
+        isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "100vh",
+              textAlign: "center",
+              paddingLeft: { md: "290px" },
+            }}
+          >
+            <Typography variant="h6" component="p">
+              Error loading products. Please try again.
+            </Typography>
+          </Box>
+        )
+      ) : (
+        ""
+      )}
 
-  if (isProductsFetched && searchedPro.length === 0) {
-    return (
-      <Container fixed>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : products.length === 0 ? (
         <Box
           sx={{
             display: "flex",
@@ -109,43 +146,47 @@ export default function Search() {
             alignItems: "center",
             minHeight: "100vh",
             textAlign: "center",
+            paddingLeft: { md: "290px" },
           }}
         >
           <Typography variant="h6" component="p">
-            No products found that match your search.
+            No products found matching your criteria.
           </Typography>
         </Box>
-      </Container>
-    );
-  }
-
-  return (
-    <Container fixed sx={{ paddingTop: "70px", paddingBottom: "70px" }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          marginY: 4,
-        }}
-      >
-        <Grid container spacing={2}>
-          {searchedPro.map((item) => (
-            <Grid key={item._id} size={{ xs: 12, md: 6, lg: 4 }}>
-              <ProductCard
-                product={item}
-                onAddToCart={(id) => console.log("Add to cart:", id)}
-                onToggleFavorite={(id) => toggleWishlist(id)}
-                onProductClick={handleProductClick}
-              />
+      ) : (
+        <Container
+          fixed
+          sx={{
+            paddingTop: "70px",
+            paddingBottom: "70px",
+            paddingLeft: { md: "290px" },
+          }}
+        >
+          <Box sx={{ display: "flex", justifyContent: "center", marginY: 4 }}>
+            <Grid container spacing={4}>
+              {products?.map((product) => (
+                <Grid key={product._id} size={{ xs: 12, sm: 6, lg: 4 }}>
+                  <ProductCard
+                    product={product}
+                    onAddToCart={(id) => console.log("Add to cart:", id)}
+                    onToggleFavorite={toggleWishlist}
+                    onProductClick={handleProductClick}
+                    sx={{ width: "290px", aspectRatio: "2/3", height: "66%" }}
+                  />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-      </Box>
-      <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages}
-        handlePagination={handlePagination}
-      ></PaginationComponent>
-    </Container>
+          </Box>
+
+          <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePagination={handlePagination}
+          />
+        </Container>
+      )}
+    </Box>
   );
 }
+
+export default memo(Search);

@@ -1,7 +1,7 @@
 import { Typography, Box, IconButton, Button } from "@mui/material";
 import Review from "../../components/Review/Review";
 import RelatedProducts from "../../components/RelatedProducts/RelatedProducts";
-import { Navigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useProductsContext } from "../../context/ProductsContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
@@ -43,7 +43,6 @@ export default function ProductDetails() {
 
   const prd = product.data[0];
 
-
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
     if (isFavorited(id)) {
@@ -53,6 +52,7 @@ export default function ProductDetails() {
       addToFav(id);
       setFavorited(true);
     }
+  };
   // check user is logged ?
   const user = localStorage.getItem("user");
 

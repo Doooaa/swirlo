@@ -1,20 +1,54 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TextField,
   Button,
   Typography,
   useMediaQuery,
+  MenuItem,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Coupons from "../../components/Coupons/Coupons";
 import MultiCardSlider from "../../components/slider/slider";
+import { useOrders } from "../../context/OrdersContext";
+import { applyCoupon } from "../../services/couponApi";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
   const isMobile = useMediaQuery("(max-width:600px)");
+  const { getCartItems, createOrder, getShippingPrice, checkout } = useOrders();
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponCode, setCouponCode] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
+  const navigate = useNavigate();
+  const shippingPrice = getShippingPrice();
+  const [cart, setCartItems] = useState([]);
 
-  // Validation Schema
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getCartItems();
+        setCartItems(res.data.data);
+      } catch (err) {
+        console.error("Error fetching cart items", err);
+      }
+    };
+
+    fetchData();
+  }, [getCartItems]);
+
+  const calculateSubtotal = () => {
+    return cart.reduce(
+      (acc, item) => acc + item.productId.price * item.quantity,
+      0
+    );
+  };
+
+  const subtotal = calculateSubtotal();
+  const totalPrice = subtotal - couponDiscount + shippingPrice;
+
   const CheckoutSchema = Yup.object().shape({
     address: Yup.string()
       .min(3, "Address should be at least 3 characters")
@@ -22,19 +56,59 @@ export default function Checkout() {
     paymentMethod: Yup.string().required("Payment method is required"),
   });
 
-  // Formik Setup
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        address: "",
-        paymentMethod: "cash",
-      },
-      validationSchema: CheckoutSchema,
-      onSubmit: (values) => {
-        console.log("Submitted values:", values);
-        alert("Order Placed Successfully!");
-      },
-    });
+  const formik = useFormik({
+    initialValues: {
+      address: "",
+      paymentMethod: "cash",
+    },
+    validationSchema: CheckoutSchema,
+    onSubmit: async (values) => {
+      const orderData = {
+        shippingAddress: values.address,
+        paymentMethod: values.paymentMethod,
+        totalPrice,
+        ...(couponCode && { couponCode }),
+      };
+
+      console.log("Submitting order data:", orderData);
+
+      setLoading(true); // Set loading to true before sending the request
+
+      try {
+        const res = await createOrder(orderData);
+
+        if (values.paymentMethod === "online") {
+          const { sessionId } = res.data; // Get session ID from the backend
+          await checkout(sessionId); // Handle online payment via Stripe
+        } else {
+          toast.success("Order placed successfully!");
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Error placing order:", error);
+        toast.error("Something went wrong, please try again!");
+      } finally {
+        setLoading(false); // Set loading to false after the request is complete
+      }
+    },
+  });
+
+  const handleCouponApply = async (code) => {
+    try {
+      const res = await applyCoupon(code);
+      console.log("res copuon is==>🟢❤=>" + res.data);
+      const { couponCode: returnedCode, discount } = res.data;
+      setCouponCode(returnedCode);
+      setCouponDiscount(discount);
+    } catch (err) {
+      console.error("Failed to apply coupon", err);
+      toast.error("Invalid or expired coupon code");
+    }
+  };
+
+  function handlePayNow() {
+    formik.handleSubmit();
+  }
 
   return (
     <Box
@@ -47,12 +121,11 @@ export default function Checkout() {
         gap: 2,
       }}
     >
-      {/* LEFT SIDE: Address + Payment */}
+      {/* LEFT SIDE */}
       <Box
         sx={{
           flex: 2,
           backgroundColor: "#fff",
-          // backgroundImage:"url('')",
           borderRadius: 2,
           p: 4,
           display: "flex",
@@ -60,7 +133,6 @@ export default function Checkout() {
           gap: 3,
         }}
       >
-   
         <Typography
           variant="h3"
           sx={{
@@ -75,7 +147,6 @@ export default function Checkout() {
         <Box
           sx={{
             background: "var(--custom-gradient)",
-            // bgcolor: "var(--gold)",
             height: "5px",
             width: { xs: "80%", md: "18rem" },
             mb: 4,
@@ -88,7 +159,7 @@ export default function Checkout() {
 
         <Box
           component="form"
-          onSubmit={handleSubmit}
+          onSubmit={formik.handleSubmit}
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -102,11 +173,11 @@ export default function Checkout() {
             id="address"
             name="address"
             label="Shipping Address"
-            value={values.address}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.address && Boolean(errors.address)}
-            helperText={touched.address && errors.address}
+            value={formik.values.address}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.address && Boolean(formik.errors.address)}
+            helperText={formik.touched.address && formik.errors.address}
           />
 
           <TextField
@@ -115,37 +186,24 @@ export default function Checkout() {
             id="paymentMethod"
             name="paymentMethod"
             label="Payment Method"
-            value={values.paymentMethod}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.paymentMethod && Boolean(errors.paymentMethod)}
-            helperText={touched.paymentMethod && errors.paymentMethod}
+            value={formik.values.paymentMethod}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.paymentMethod &&
+              Boolean(formik.errors.paymentMethod)
+            }
+            helperText={
+              formik.touched.paymentMethod && formik.errors.paymentMethod
+            }
           >
-            <option value="cash">Cash on Delivery</option>
-            <option value="online">Online Payment</option>
+            <MenuItem value="cash">Cash on Delivery</MenuItem>
+            <MenuItem value="online">Online Payment</MenuItem>
           </TextField>
-
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{
-              backgroundColor: "var(--primary)",
-              color: "#fff",
-              fontWeight: "bold",
-              borderRadius: 2,
-              mt: 2,
-              "&:hover": {
-                backgroundColor: "var(--secondary)",
-              },
-            }}
-          >
-            Continue
-          </Button>
         </Box>
       </Box>
 
-      {/* RIGHT SIDE: Coupons + Summary */}
+      {/* RIGHT SIDE */}
       <Box
         sx={{
           flex: 1,
@@ -157,17 +215,22 @@ export default function Checkout() {
           gap: 3,
         }}
       >
-        <Coupons />
+        <Coupons onApplyCoupon={handleCouponApply} />
 
         <Box sx={{ borderTop: "1px solid #ddd", pt: 2 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
             <Typography variant="body1">Subtotal:</Typography>
-            <Typography variant="body1">EGP 3344</Typography>
+            <Typography variant="body1">EGP {subtotal}</Typography>
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
             <Typography variant="body1">Shipping:</Typography>
-            <Typography variant="body1">EGP 34</Typography>
+            <Typography variant="body1">EGP {shippingPrice}</Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+            <Typography variant="body1">Discount:</Typography>
+            <Typography variant="body1">EGP {couponDiscount}</Typography>
           </Box>
 
           <Box
@@ -181,7 +244,7 @@ export default function Checkout() {
             }}
           >
             <Typography variant="h6">Total:</Typography>
-            <Typography variant="h6">EGP 3378</Typography>
+            <Typography variant="h6">EGP {totalPrice}</Typography>
           </Box>
 
           <Button
@@ -189,33 +252,33 @@ export default function Checkout() {
             fullWidth
             variant="contained"
             sx={{
-              mt: 3,
               backgroundColor: "var(--primary)",
-              fontWeight: "bold",
               color: "#fff",
+              fontWeight: "bold",
               borderRadius: 2,
+              mt: 2,
               "&:hover": {
                 backgroundColor: "var(--secondary)",
               },
             }}
+            onClick={handlePayNow}
+            disabled={loading} // Disable button when loading
           >
-            Place Order
+            {loading ? "Processing..." : "Pay Now"} {/* Show loading text when in loading state */}
           </Button>
+
           <Box
             sx={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              mt: 3,
             }}
           >
             <img
               src="src/assets/coup.png"
-              alt="Placeholder"
-              style={{
-                width: "100%",
-                maxWidth: "320px",
-                height: "auto",
-              }}
+              alt="Coupon"
+              style={{ width: "100%", maxWidth: "320px", height: "auto" }}
             />
           </Box>
         </Box>

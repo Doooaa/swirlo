@@ -46,7 +46,7 @@ import Search from "./pages/Search/Search.jsx";
 import ProductsContextProvider from "./context/ProductsContext.jsx";
 import CategoryProducts from "./pages/CategoryProducts/CategoryProducts.jsx";
 import ArrowUp from '../src/components/ArrowUp/ArrowUp.jsx'
-
+import {OrdersContextProvider} from '../src/context/OrdersContext.jsx'
 // ^ routing setup
 const router = createBrowserRouter([
   {
@@ -141,6 +141,7 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
           {/* <FavoritesContextProvider> */}
+          <OrdersContextProvider>
           <CategoriesContextProvider>
               <ProductsContextProvider>
                 <ToastContainer />
@@ -150,7 +151,7 @@ createRoot(document.getElementById("root")).render(
 
             </ProductsContextProvider>
           </CategoriesContextProvider>
-          
+          </OrdersContextProvider>
           {/* </FavoritesContextProvider> */}
         </AuthContextProvider>
       </QueryClientProvider>

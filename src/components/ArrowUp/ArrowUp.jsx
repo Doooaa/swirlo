@@ -20,7 +20,6 @@ export default function ArrowUp() {
   function goUp() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
-
   useEffect(() => {
     window.addEventListener("scroll", toggleVisibilityAndProgress);
     return () => window.removeEventListener("scroll", toggleVisibilityAndProgress);

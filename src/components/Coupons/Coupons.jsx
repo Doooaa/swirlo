@@ -11,7 +11,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { applyCoupon } from "../../services/couponApi";
 
-export default function Coupons() {
+export default function Coupons({ onApplyCoupon }) {
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ message: "", success: null });
 
@@ -29,18 +29,25 @@ export default function Coupons() {
         setLoading(true);
         setFeedback({ message: "", success: null });
 
-        // Fake delay for demo purpose (remove if applyCoupon is async already)
-        const response = await applyCoupon({ couponCode: values.coupon }); // real API call
-        console.log(response);
+        const response = await applyCoupon({ couponCode: values.coupon });
+
+        // Trigger parent function with coupon code and discount
+        if (onApplyCoupon) {
+          onApplyCoupon({
+            couponCode: values.coupon,
+            discount: response.discount,
+          });
+        }
+
         setFeedback({
           message: response.message || "Coupon applied successfully!",
           success: true,
         });
+
         resetForm();
       } catch (error) {
         setFeedback({
-          // message:error.response?.data?.message || "Invalid coupon or something went wrong.",
-          message: "Invalid coupon",
+         message: error.response?.message || "Invalid coupon",
           success: false,
         });
       } finally {
@@ -49,8 +56,7 @@ export default function Coupons() {
     },
   });
 
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    formik;
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit } = formik;
 
   return (
     <Box
@@ -65,7 +71,6 @@ export default function Coupons() {
         gap: 2,
       }}
     >
-      {/* === Group TextField + Button Side by Side === */}
       <Box sx={{ display: "flex", gap: 1 }}>
         <TextField
           id="coupon"
@@ -96,7 +101,7 @@ export default function Coupons() {
           variant="contained"
           disabled={loading}
           sx={{
-            height: "56px", // same height as TextField
+            height: "56px",
             backgroundColor: "var(--primary)",
             whiteSpace: "nowrap",
             "&:hover": {
@@ -112,7 +117,6 @@ export default function Coupons() {
         </Button>
       </Box>
 
-      {/* ✅ Feedback Message */}
       {feedback.message && (
         <Alert severity={feedback.success ? "success" : "error"}>
           {feedback.message}

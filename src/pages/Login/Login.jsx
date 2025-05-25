@@ -237,7 +237,6 @@ export default function Login() {
         sx={{
           flex: 1,
           backgroundColor: "#f5f5f5",
-          display: "flex",
           justifyContent: "center",
           alignItems: "center",
           display: { xs: "none", md: "flex" },

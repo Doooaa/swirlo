@@ -26,13 +26,13 @@ export default function Products() {
   // check user is logged ?
   const user = localStorage.getItem("user");
   // add to cart
-  const handleAddToCart = () => {
+  const handleAddToCart = (id) => {
     if (!user) {
       toast.error("Please log in to add items to cart");
       return;
     }
     toast.success("item added to cart successfully");
-    addToCart(prd._id);
+    addToCart(id);
   };
 
   // Handle Favourites
@@ -142,8 +142,7 @@ export default function Products() {
               minHeight: "100vh",
               textAlign: "center",
               paddingLeft: { md: "290px" },
-            }}
-          >
+            }}>
             <Typography variant="h6" component="p">
               Error loading products. Please try again.
             </Typography>
@@ -167,8 +166,7 @@ export default function Products() {
             minHeight: "100vh",
             textAlign: "center",
             paddingLeft: { md: "290px" },
-          }}
-        >
+          }}>
           <Typography variant="h6" component="p">
             No products found matching your criteria.
           </Typography>
@@ -183,20 +181,12 @@ export default function Products() {
               gap: 4,
               justifyContent: "center",
               marginY: 4,
-            }}
-          >
+            }}>
             {displayProducts?.map((prd) => (
               <ProductCard
                 key={prd._id}
-                product={{
-                  thumbnail: prd.thumbnail,
-                  title: prd.title,
-                  avgRating: prd.avgRating,
-                  price: prd.price,
-                  label: prd.label || "no label",
-                  _id: prd._id,
-                }}
-                onAddToCart={handleAddToCart}
+                product={prd}
+                onAddToCart={() => handleAddToCart(prd._id)}
                 onToggleFavorite={(id) => toggleWishlist(id)}
                 onProductClick={handleProductClick}
                 sx={{ width: "290px", aspectRatio: "2/3", height: "66%" }}

@@ -187,7 +187,7 @@ const Favorites = () => {
             <Button
               variant="contained"
               startIcon={<ArrowBack />}
-              href="/menu-items"
+              href="/menu"
               sx={{
                 background:
                   "linear-gradient(45deg, var(--light-color) 20%, var(--primary) 70%)",

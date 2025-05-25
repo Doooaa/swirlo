@@ -1,26 +1,19 @@
-import { Box, Button, createTheme, Skeleton, Stack, ThemeProvider, Typography } from "@mui/material";
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getCartItems } from "../../services/cartApi";
+import { Box, Button, createTheme, Divider, Skeleton, Stack, ThemeProvider, Typography } from "@mui/material";
 import PaginationComponent from "../../components/Pagination/PaginationComp";
-export default function Cart() {
-  const [page, setPage] = useState(1);
+import { useNavigate } from "react-router";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { useCart } from "../../context/CartContext";
+import ClearIcon from "@mui/icons-material/Clear";
+import image from "../../assets/emptyCart.png";
 
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["cartItems", page],
-    queryFn: () => getCartItems(page),
-  });
+export default function Cart() {
+  let navigate = useNavigate();
+  const { data, page, setPage, isLoading, handleCartRemoval, handleQuantity } = useCart();
 
   function handlePagination(value) {
     setPage(value);
   }
-  const handleDecrease = () => {
-    // if (quantity > 1) setQuantity(quantity - 1);
-  };
 
-  const handleIncrease = () => {
-    // setQuantity(quantity + 1);
-  };
   const themeC = createTheme({
     palette: {
       primary: {
@@ -28,126 +21,156 @@ export default function Cart() {
       },
     },
   });
-  return (
-    <>
-      <Stack minHeight={"90vh"} p={{ xs: 1, md: 10 }} gap={2}>
-        <Typography variant="h4" sx={{ color: "var(--gold)" }}>
-          Shopping Cart
-        </Typography>
-        {/*Handle cart item with checkout*/}
-        <Stack flexDirection={{ xs: "column", lg: "row" }} position={"relative"} top={0}>
-          <>
-            {isLoading ? (
-              <Box sx={{ width: 500 }}>
-                <Skeleton />
-                <Skeleton animation="wave" />
-                <Skeleton animation={false} />
-              </Box>
-            ) : (
-              <>
-                {data?.data.length > 0 ? (
-                  <>
-                    <Stack gap={2} flexDirection={"column"} flex={1}>
-                      <Button variant="outlined" sx={{ textTransform: "none", width: "fit-content", alignSelf: "end" }} color="error">
-                        Remove Cart
-                      </Button>
-                      {data?.data?.map((item) => {
-                        return (
-                          <Stack>
-                            <Stack
-                              flexDirection={"row"}
-                              key={item?._id}
-                              sx={{ borderColor: "rgb(175, 169, 135)" }}
-                              maxWidth={"100%"}
-                              p={2}
-                              borderRadius={2}
-                              border={2}
-                            >
-                              <Stack component="img" borderRadius={2} width={"20%"} src={item?.productId.thumbnail} flex={0.2}></Stack>
-                              <Stack pl={2} justifyContent={"center"} flex={1}>
-                                <Stack flexDirection={"row"} justifyContent={"space-between"}>
-                                  <Typography
-                                    variant="h6"
-                                    sx={{
-                                      fontSize: { xs: "1.1rem", sm: "1.3rem" },
-                                    }}
-                                  >
-                                    {item?.productId.title}
-                                  </Typography>
-                                  <Box
-                                    display="flex"
-                                    alignItems="center"
-                                    gap={1}
-                                    border={1}
-                                    borderColor={"var(--gold)"}
-                                    p={{ xs: 0.5, md: 1 }}
-                                    borderRadius={2}
-                                  >
-                                    <ThemeProvider theme={themeC}>
-                                      <Button
-                                        variant="outlined"
-                                        size="small"
-                                        sx={{
-                                          minWidth: 24,
-                                          fontSize: "0.75rem",
-                                          lineHeight: 1,
-                                        }}
-                                        onClick={handleDecrease}
-                                      >
-                                        -
-                                      </Button>
-                                      <Box minWidth={24} textAlign="center" color={"var(--primary)"}>
-                                        {item?.quantity}
-                                      </Box>
 
-                                      <Button
-                                        variant="outlined"
-                                        size="small"
-                                        sx={{
-                                          minWidth: 24,
-                                          padding: "2px",
-                                          fontSize: "0.75rem",
-                                          lineHeight: 1,
-                                        }}
-                                        onClick={handleIncrease}
-                                      >
-                                        +
-                                      </Button>
-                                    </ThemeProvider>
-                                  </Box>
-                                </Stack>
-                                <Box
-                                  sx={{
-                                    background: "var(--custom-gradient)",
-                                    height: "3px",
-                                    width: { xs: "40%", md: "14rem" },
-                                    mb: 2,
-                                  }}
-                                />
-                                <Typography variant="p" mb={1.2} sx={{ color: "var(--primary)" }} fontWeight={"bold"}>
-                                  EGP {item?.productId.price}
-                                </Typography>
-                              </Stack>
-                            </Stack>
-                          </Stack>
-                        );
-                      })}
-                      <PaginationComponent totalPages={data?.totalPages} currentPage={page} handlePagination={handlePagination}></PaginationComponent>
-                    </Stack>
-                    <Stack flex={1} position={"sticky"} top={0} borderRadius={2}>
-                      <Typography variant="p" fontWeight={"bold"}>
-                        Checkout
-                      </Typography>
-                    </Stack>
-                  </>
-                ) : (
-                  <></>
-                )}
-              </>
-            )}
-          </>
+  if (isLoading) {
+    return <LoadingSpinner></LoadingSpinner>;
+  }
+
+  return (
+    <Stack minHeight="90vh" p={{ xs: 2, md: 6 }} spacing={3} width="90%" mx={"auto"}>
+      <Stack flexDirection={{ xs: "column", lg: "row" }}>
+        {/* LEFT COLUMN - Cart */}
+        <Stack flex={1} spacing={1} alignItems="center">
+          {/* Title and Remove Button */}
+          <Stack width={{ xs: "100%", sm: "80%", md: "70%", lg: "700px" }} mt={2}>
+            <Typography variant="h4" sx={{ color: "var(--gold)" }}>
+              Shopping Cart
+            </Typography>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleCartRemoval}
+              sx={{ textTransform: "none", width: "fit-content", alignSelf: "end" }}
+            >
+              Remove Cart
+            </Button>
+          </Stack>
+
+          {/* Cart Items */}
+          <Stack gap={2} width="100%" alignItems="center">
+            {data?.data.map((item) => (
+              <Box
+                key={item._id}
+                border={2}
+                borderColor="rgb(175, 169, 135)"
+                borderRadius={2}
+                p={2}
+                width={{ xs: "100%", sm: "80%", md: "70%", lg: "700px" }}
+                display="flex"
+                flexDirection={{ xs: "column", sm: "row" }}
+                gap={2}
+              >
+                {/* Product Image */}
+                <Box
+                  component="img"
+                  src={item.productId.thumbnail}
+                  alt={item.productId.title}
+                  width={{ xs: "100%", sm: "120px" }}
+                  height="auto"
+                  borderRadius={2}
+                />
+
+                {/* Product Details */}
+                <Stack flex={1} gap={1}>
+                  <Button sx={{ alignSelf: "flex-end", color: "var(--primary)", minWidth: 0 }} onClick={() => handleCartRemoval(item.productId._id)}>
+                    <ClearIcon />
+                  </Button>
+                  <Stack flexDirection="row" justifyContent="space-between" alignItems="baseline" my={2} flexWrap="wrap" gap={2}>
+                    <Typography variant="h6" fontSize={{ xs: "1rem", md: "1.2rem" }}>
+                      {item.productId.title}
+                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <ThemeProvider theme={themeC}>
+                        <Button variant="outlined" size="small" onClick={() => handleQuantity(item.productId._id, item.quantity - 1)}>
+                          -
+                        </Button>
+                        <Typography color="var(--primary)" minWidth="30px" textAlign="center">
+                          {item.quantity}
+                        </Typography>
+                        <Button variant="outlined" size="small" onClick={() => handleQuantity(item.productId._id, item.quantity + 1)}>
+                          +
+                        </Button>
+                      </ThemeProvider>
+                    </Box>
+                  </Stack>
+                  <Typography alignSelf="flex-end" color="var(--primary)" fontSize="1rem">
+                    EGP{item.productId.price}.00
+                  </Typography>
+                  <Typography alignSelf="flex-end" fontWeight={700} color="var(--primary)">
+                    Total: EGP{item.productId.price * item.quantity}.00
+                  </Typography>
+                </Stack>
+              </Box>
+            ))}
+          </Stack>
+
+          <PaginationComponent totalPages={data?.totalPages} currentPage={page} handlePagination={handlePagination} />
+        </Stack>
+        <Stack
+          flex={{ xs: 1, lg: 0.4 }}
+          position="sticky"
+          top={80}
+          borderRadius={2}
+          bgcolor="var(--secondary)"
+          p={3}
+          mt={10}
+          spacing={2}
+          minWidth={{ lg: 300 }}
+          height="fit-content"
+        >
+          <Stack direction="row" justifyContent="space-between">
+            <Typography fontWeight="bold">Subtotal:</Typography>
+            <Typography>EGP {data?.subtotal}.00</Typography>
+          </Stack>
+          <Stack direction="row" justifyContent="space-between">
+            <Typography fontWeight="bold">Shipping:</Typography>
+            <Typography>EGP 50.00</Typography>
+          </Stack>
+          <Divider />
+          <Stack direction="row" justifyContent="space-between">
+            <Typography fontWeight="bold" fontSize="1.1rem">
+              Total:
+            </Typography>
+            <Stack>
+              <Typography fontSize="1.1rem">EGP {data?.subtotal + 50}.00</Typography>
+              <Typography fontSize="0.8rem" color="text.secondary" alignSelf="end">
+                including VAT
+              </Typography>
+            </Stack>
+          </Stack>
+          <ThemeProvider theme={themeC}>
+            <Button variant="contained" sx={{ textTransform: "none" }} onClick={() => navigate("/checkout")}>
+              Checkout
+            </Button>
+          </ThemeProvider>
         </Stack>
       </Stack>
-    </>
+
+      {/* Empty Cart */}
+      {data?.data.length === 0 && (
+        <Stack alignItems="center" spacing={3} mt={5}>
+          <Box
+            component="img"
+            src={image}
+            alt="Empty Cart"
+            width={{ xs: "70%", md: "30%" }}
+            sx={{
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "scale(1.1)",
+              },
+            }}
+          />
+          <Typography fontSize={{ xs: "1.2rem", md: "1.5rem" }} color="var(--gold)" textAlign="center">
+            Oops! Your cart is lonely. Let’s fix that!
+          </Typography>
+          <ThemeProvider theme={themeC}>
+            <Button variant="contained" sx={{ textTransform: "none" }} onClick={() => navigate("/menu-items")}>
+              Start adding!
+            </Button>
+          </ThemeProvider>
+        </Stack>
+      )}
+    </Stack>
   );
 }

@@ -15,9 +15,9 @@ import { useOrders } from "../../context/OrdersContext";
 import { applyCoupon } from "../../services/couponApi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
+import beans from "../../assets/beans.png";
 export default function Checkout() {
-  const isMobile = useMediaQuery("(max-width:600px)");
+  // const isMobile = useMediaQuery("(max-width:600px)");
   const { getCartItems, createOrder, getShippingPrice, checkout } = useOrders();
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponCode, setCouponCode] = useState("");
@@ -126,6 +126,7 @@ export default function Checkout() {
         sx={{
           flex: 2,
           backgroundColor: "#fff",
+          //  background: `linear-gradient(0deg, rgba(104, 58, 9, 1), rgba(255, 255, 255, 0.74)), url(${beans})`,
           borderRadius: 2,
           p: 4,
           display: "flex",
@@ -207,7 +208,8 @@ export default function Checkout() {
       <Box
         sx={{
           flex: 1,
-          backgroundColor: "var(--main-background)",
+          
+          background: "linear-gradient(0deg, rgb(171, 132, 90), rgba(255, 255, 255, 0.74))",
           borderRadius: 2,
           p: 4,
           display: "flex",

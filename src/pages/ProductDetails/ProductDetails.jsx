@@ -1,7 +1,7 @@
 import { Typography, Box, IconButton, Button } from "@mui/material";
 import Review from "../../components/Review/Review";
 import RelatedProducts from "../../components/RelatedProducts/RelatedProducts";
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 import { useProductsContext } from "../../context/ProductsContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlin
 import { useEffect, useState } from "react";
 import { red } from "@mui/material/colors";
 import { useFavoritesContext } from "../../context/FavoritesContext";
+import { useCart } from "../../context/CartContext";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -19,6 +20,7 @@ export default function ProductDetails() {
   const { getProductDetails } = useProductsContext();
   const { data: product, isLoading, isError, error } = getProductDetails(id);
   const [favorited, setFavorited] = useState(false);
+  const { addToCart } = useCart();
   const { addToFav, removeFromFav, isFavorited } = useFavoritesContext();
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function ProductDetails() {
 
   const prd = product.data[0];
 
+
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
     if (isFavorited(id)) {
@@ -50,6 +53,17 @@ export default function ProductDetails() {
       addToFav(id);
       setFavorited(true);
     }
+  // check user is logged ?
+  const user = localStorage.getItem("user");
+
+  // add to cart
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+    toast.success("item added to cart successfully");
+    addToCart(prd._id);
   };
 
   console.log(product);
@@ -120,7 +134,7 @@ export default function ProductDetails() {
                 <FavoriteIcon sx={{ fontSize: "2.5rem", color: red[800] }} />
               ) : (
                 <FavoriteBorderOutlinedIcon
-                  sx={{ fontSize: "2.5rem", color: "var( --primary)" }}
+                  sx={{ fontSize: "2.5rem", color: "var(--primary)" }}
                 />
               )}
             </IconButton>
@@ -167,6 +181,7 @@ export default function ProductDetails() {
           </Typography>
 
           <Button
+            onClick={handleAddToCart}
             sx={{
               width: { xs: "80%", sm: "80%" },
               p: 2,

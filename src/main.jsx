@@ -48,7 +48,7 @@ import FavoritesContextProvider from "./context/FavoritesContext.jsx";
 import CategoryProducts from "./pages/CategoryProducts/CategoryProducts.jsx";
 import ArrowUp from "../src/components/ArrowUp/ArrowUp.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
-
+import { OrdersContextProvider } from "./context/OrdersContext.jsx";
 // ^ routing setup
 const router = createBrowserRouter([
   {
@@ -142,13 +142,16 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
           <CartContextProvider>
+
             <FavoritesContextProvider>
               <CategoriesContextProvider>
                 <ProductsContextProvider>
-                  <ToastContainer />
-                  <ArrowUp />
+                  <OrdersContextProvider>
+                    <ToastContainer />
+                      <ArrowUp />
                   {/* <Toaster position="top-right" reverseOrder={false} /> */}
-                  <RouterProvider router={router} />
+                      <RouterProvider router={router} />
+                   </OrdersContextProvider>
                 </ProductsContextProvider>
               </CategoriesContextProvider>
             </FavoritesContextProvider>

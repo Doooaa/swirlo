@@ -45,7 +45,7 @@ import { ToastContainer } from "react-toastify";
 import Search from "./pages/Search/Search.jsx";
 import ProductsContextProvider from "./context/ProductsContext.jsx";
 import ArrowUp from '../src/components/ArrowUp/ArrowUp.jsx'
-
+import {OrdersContextProvider} from '../src/context/OrdersContext.jsx'
 // ^ routing setup
 const router = createBrowserRouter([
   {
@@ -139,6 +139,7 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
           {/* <FavoritesContextProvider> */}
+          <OrdersContextProvider>
           <CategoriesContextProvider>
               <ProductsContextProvider>
                 <ToastContainer />
@@ -147,7 +148,7 @@ createRoot(document.getElementById("root")).render(
                 <RouterProvider router={router} />
             </ProductsContextProvider>
           </CategoriesContextProvider>
-          
+          </OrdersContextProvider>
           {/* </FavoritesContextProvider> */}
         </AuthContextProvider>
       </QueryClientProvider>

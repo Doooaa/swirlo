@@ -10,10 +10,6 @@ export default function Home() {
     <>
       <HomeHero></HomeHero>
       <CategoryCard></CategoryCard>
-      {/* <ProductDetails></ProductDetails> */}
-      <Link to={"/checkout"}>
-        <button>checkout</button>
-      </Link>
       <HomeSecOne></HomeSecOne>
       <HomeSecTwo></HomeSecTwo>
     </>

@@ -42,7 +42,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const navLinks = [
-    { label: "Home", to: "/home" },
+    { label: "Home", to: "/" },
     { label: "Menu", to: "/menu-items" },
     { label: "About Us", to: "/about" },
     { label: "Contact Us", to: "/contact" },
@@ -77,7 +77,10 @@ const Navbar = () => {
               ? "transparent"
               : "var(--light-bg)",
           transition: "all 0.3s ease",
-          backdropFilter: "blur(8px)",
+          backdropFilter:
+            location.pathname === "/home" || location.pathname === "/"
+              ? "none"
+              : "blur(8px)",
           boxShadow:
             !scrolled &&
             (location.pathname === "/home" || location.pathname === "/")

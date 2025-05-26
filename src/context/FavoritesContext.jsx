@@ -11,6 +11,7 @@ export default function FavoritesContextProvider({ children }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch favorites with pagination
+  const user = localStorage.getItem("user");
   const {
     data = {},
     isLoading,
@@ -19,6 +20,7 @@ export default function FavoritesContextProvider({ children }) {
     queryKey: ["favorites", currentPage],
     queryFn: () => favoritesServices.fetchFavorites(currentPage),
     keepPreviousData: true,
+    enabled: !!user,
   });
 
   const { favorites = [], totalPages = 1 } = data;

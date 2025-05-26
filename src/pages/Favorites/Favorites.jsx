@@ -48,7 +48,7 @@ const Favorites = () => {
     queryKey: ["favorites", currentPage],
     queryFn: () => favoritesServices.fetchFavorites(currentPage),
     keepPreviousData: true,
-    enabled: !!user, // query only runs if user exists
+    enabled: !!user,
   });
 
   const handlePagination = (newPage) => {

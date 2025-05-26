@@ -7,6 +7,7 @@ import {
   getCurrentUser,
   PostUserByGoogle,
 } from "../services/authApi";
+import { toast } from "react-toastify";
 
 const AuthContext = createContext();
 
@@ -76,6 +77,7 @@ export default function AuthProvider({ children }) {
       await PostUserByGoogle({ token });
       localStorage.setItem("user", JSON.stringify(decoded));
       navigate("/");
+      toast.success("Logged In Successfully!");
     } catch (error) {
       console.error("Error during login:", error);
     }

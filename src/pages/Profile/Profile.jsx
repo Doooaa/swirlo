@@ -805,7 +805,7 @@ const Profile = () => {
                     size="small"
                     onClick={async () => {
                       await logout();
-                      toast.success("User logged out successfully!");
+                      toast.success("Logged Out Successfully!");
                       navigate("/login");
                     }}
                     sx={{

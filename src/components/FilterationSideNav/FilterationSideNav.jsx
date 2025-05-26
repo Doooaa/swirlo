@@ -139,8 +139,8 @@ const FilterationSideNav = ({ onFilterChange }) => {
           onClick={handleDrawerToggle}
           sx={{
             position: "fixed",
-            bottom: 20,
-            right: 20,
+            bottom: 30,
+            right: 30,
             zIndex: 1200,
             backgroundColor: "var(--light-color)",
             color: "white",
@@ -148,9 +148,11 @@ const FilterationSideNav = ({ onFilterChange }) => {
               backgroundColor: "var(--accent)",
               color: "var(--primary)",
             },
+            width: "50px",
+            height: "50px",
           }}
         >
-          <FilterIcon />
+          <FilterIcon sx={{ fontSize: "30px" }} />
         </IconButton>
       )}
 

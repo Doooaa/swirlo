@@ -56,6 +56,7 @@ const FilterationSideNav = ({ onFilterChange }) => {
     bagels: false,
     pancakes: false,
     oatmeal: false,
+    combo: false,
     // Price
     price: 200, // Default max price
   });
@@ -118,6 +119,8 @@ const FilterationSideNav = ({ onFilterChange }) => {
     if (currentFilters.pancakes) selectedFilters.push("pancake");
     if (currentFilters.oatmeal) selectedFilters.push("oatmeal");
 
+    if (currentFilters.combo) selectedFilters.push("combo");
+
     const query = {
       title: selectedFilters.join(", "),
       price: currentFilters.price,
@@ -162,6 +165,8 @@ const FilterationSideNav = ({ onFilterChange }) => {
           maxWidth: isMobile ? "80%" : "280px",
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
+            position: !isMobile ? "absolute" : "fixed",
+            zIndex: !isMobile ? "5" : "200000",
             width: isMobile ? "80%" : "280px",
             boxSizing: "border-box",
             backgroundColor: "var(--light-bg)",
@@ -379,6 +384,38 @@ const FilterationSideNav = ({ onFilterChange }) => {
           <Collapse in={expandedCategory === "breakfast"} timeout="auto">
             <List component="div" disablePadding>
               {["bagels", "pancakes", "oatmeal"].map((item) => (
+                <ListItem key={item} sx={{ pl: 4 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={localFilters[item]}
+                        onChange={handleFilterChange(item)}
+                        size="small"
+                        sx={{
+                          color: "var(--light-color)",
+                          "&.Mui-checked": {
+                            color: "var(--light-color)",
+                          },
+                        }}
+                      />
+                    }
+                    label={item.charAt(0).toUpperCase() + item.slice(1)}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Collapse>
+          <Divider />
+
+          {/* combo */}
+          {/* Breakfast */}
+          <ListItem button onClick={() => handleExpand("combo")}>
+            <ListItemText primary="Combo" sx={{ fontWeight: "bold" }} />
+            {expandedCategory === "combo" ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={expandedCategory === "combo"} timeout="auto">
+            <List component="div" disablePadding>
+              {["combo"].map((item) => (
                 <ListItem key={item} sx={{ pl: 4 }}>
                   <FormControlLabel
                     control={

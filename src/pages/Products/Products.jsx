@@ -26,7 +26,7 @@ export default function Products() {
     navigate(`/menu-items/${encodeURIComponent(category)}/${id}`);
   };
 
-  const limit = 6;
+  const limit = 8;
 
   // check user is logged ?
   const user = localStorage.getItem("user");
@@ -108,7 +108,7 @@ export default function Products() {
     isError: isCatError,
     error: catError,
   } = useQuery({
-    queryKey: ["productsByCategory", categoryName, page, limit],
+    queryKey: ["productsByCategory", categoryName, page],
     queryFn: () => getProductByCategory(categoryName, page, limit),
     enabled: !!categoryName,
     keepPreviousData: true,
@@ -163,8 +163,7 @@ export default function Products() {
     return (
       <Container fixed>
         <FilterationSideNav onFilterChange={handleFilterChange} />
-        {/* {isLoading || isFilterLoading ? ( */}
-        {loading || isCatLoading || isFilterLoading ? (
+        {loading ? (
           <LoadingSpinner />
         ) : (
           <Box
@@ -189,7 +188,7 @@ export default function Products() {
   return (
     <div>
       <FilterationSideNav onFilterChange={handleFilterChange} />
-      {isLoading || isFilterLoading ? (
+      {loading ? (
         <LoadingSpinner />
       ) : displayProducts.length === 0 ? (
         <Box
@@ -214,7 +213,6 @@ export default function Products() {
               flexDirection: "row",
               flexWrap: "wrap",
               gap: 4,
-              justifyContent: "center",
               marginY: 4,
             }}
           >
@@ -237,7 +235,7 @@ export default function Products() {
                 ? favCurrentPage
                 : categoryName
                 ? catCurrentPage
-                : products.currentPage
+                : products?.currentPage
             }
             // currentPage={products.currentPage}
             handlePagination={handlePagination}

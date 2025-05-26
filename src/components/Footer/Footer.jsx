@@ -12,6 +12,7 @@ export default function Footer() {
   return (
     <Box
       sx={{
+        marginTop: "auto",
         px: { xs: 3, sm: 6, md: 8, lg: "60px" },
         py: { xs: 4, sm: 5, md: "50px" },
         backgroundColor: "var(--tertiary)",
@@ -102,15 +103,9 @@ export default function Footer() {
             For You
           </Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <Box component={RouterLink} to="/NewArrival" sx={styles.linkStyle}>
-              New Arrival
-            </Box>
-            <Box component={RouterLink} to="/BestSelling" sx={styles.linkStyle}>
-              Best Selling
-            </Box>
-            <Box component={RouterLink} to="/50%Off" sx={styles.linkStyle}>
-              50% Off
-            </Box>
+            <Box sx={styles.linkStyle}>New Arrival</Box>
+            <Box sx={styles.linkStyle}>Best Selling</Box>
+            <Box sx={styles.linkStyle}>50% Off</Box>
           </Box>
         </Grid>
 

@@ -109,7 +109,7 @@ export default function Review() {
                 ) : (
                   <>
                     <Typography variant="h5" sx={{ color: "var(--primary)" }}>
-                      There is no reviews for this item😞
+                      There is no reviews for this item
                     </Typography>
                   </>
                 )}

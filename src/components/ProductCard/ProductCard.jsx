@@ -7,8 +7,11 @@ import {
   IconButton,
   Box,
   Chip,
+  Stack,
+  Divider,
 } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useTheme, useMediaQuery } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { styled } from "@mui/material/styles";
 import { useFavoritesContext } from "../../context/FavoritesContext";
@@ -44,6 +47,7 @@ const OverlayBox = styled(Box)(({ hover }) => ({
 const LabelChip = styled(Chip)({
   position: "absolute",
   left: 0,
+  zIndex: 1,
   transform: "translateX(-100%)",
   transition: "transform 0.5s",
   "&.hovered": { transform: "translateX(10px)" },
@@ -75,6 +79,9 @@ const ProductCard = ({
 }) => {
   const [hover, setHover] = useState(false);
   const { isFavorited } = useFavoritesContext();
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
@@ -113,8 +120,8 @@ const ProductCard = ({
             src={product.thumbnail}
             alt={product.title}
             sx={{
-              width: "95%",
-              height: "95%",
+              width: isSmallScreen ? "100%" : "95%",
+              height: isSmallScreen ? "100%" : "95%",
               objectFit: "cover",
               transition: "transform 0.4s",
               transform: hover ? "scale(1.15)" : "scale(1)",
@@ -127,50 +134,96 @@ const ProductCard = ({
           <LabelChip
             label="New"
             color="success"
-            className={hover ? "hovered" : ""}
-            sx={{ top: 8 }}
+            className={!isSmallScreen && hover ? "hovered" : ""}
+            sx={{
+              top: 8,
+              transform: isSmallScreen ? "translateX(10px)" : undefined,
+            }}
           />
         )}
         {labels.includes("vegan") && (
           <LabelChip
             label="Vegan"
             color="secondary"
-            className={hover ? "hovered" : ""}
-            sx={{ top: 40 }}
+            className={!isSmallScreen && hover ? "hovered" : ""}
+            sx={{
+              top: 40,
+              transform: isSmallScreen ? "translateX(10px)" : undefined,
+            }}
           />
         )}
         {labels.includes("signature") && (
           <LabelChip
             label="Signature"
             color="warning"
-            className={hover ? "hovered" : ""}
-            sx={{ top: 72 }}
+            className={!isSmallScreen && hover ? "hovered" : ""}
+            sx={{
+              top: 72,
+              transform: isSmallScreen ? "translateX(10px)" : undefined,
+            }}
           />
         )}
 
-        <OverlayBox hover={hover}>
-          <IconButton
-            onClick={handleFavoriteClick}
-            sx={{
-              color: favorited ? "error.main" : "white",
-              "&:hover": { color: "error.main" },
-            }}
-            aria-label="toggle favorite">
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton
-            onClick={handleAddToCartClick}
-            sx={{
-              color: "white",
-              "&:hover": { color: "var(--accent)" },
-            }}
-            aria-label="add to cart">
-            <ShoppingCartIcon />
-          </IconButton>
-        </OverlayBox>
+        {!isSmallScreen && (
+          <OverlayBox hover={hover}>
+            <IconButton
+              onClick={handleFavoriteClick}
+              sx={{
+                color: favorited ? "error.main" : "white",
+                "&:hover": { color: "error.main" },
+              }}
+              aria-label="toggle favorite">
+              <FavoriteIcon />
+            </IconButton>
+            <IconButton
+              onClick={handleAddToCartClick}
+              sx={{
+                color: "white",
+                "&:hover": { color: "var(--accent)" },
+              }}
+              aria-label="add to cart">
+              <ShoppingCartIcon />
+            </IconButton>
+          </OverlayBox>
+        )}
       </Box>
 
-      <CardContent sx={{ textAlign: "center" }}>
+      <CardContent sx={{ textAlign: "center", padding: isSmallScreen ? 0 : 2 }}>
+        {isSmallScreen && (
+          <Stack
+            divider={
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ border: "1px solid var(--light-bg)" }}
+              />
+            }
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              borderBottom: "2px solid var(--light-bg)",
+            }}>
+            <IconButton
+              onClick={handleFavoriteClick}
+              sx={{
+                color: favorited ? "error.main" : "text.secondary",
+                "&:hover": { color: "error.main" },
+              }}
+              aria-label="toggle favorite">
+              <FavoriteIcon />
+            </IconButton>
+            <IconButton
+              onClick={handleAddToCartClick}
+              sx={{
+                color: "text.secondary",
+                "&:hover": { color: "var(--accent)" },
+              }}
+              aria-label="add to cart">
+              <ShoppingCartIcon />
+            </IconButton>
+          </Stack>
+        )}
         <StarRating rating={product.avgRating} />
         <Typography
           variant="h6"
@@ -185,7 +238,7 @@ const ProductCard = ({
           sx={{
             fontSize: "1.1rem",
             fontWeight: "bold",
-            marginTop: 1,
+            marginTop: isSmallScreen ? 0 : 1,
             color: "var(--gold)",
           }}>
           {product.price} EGP

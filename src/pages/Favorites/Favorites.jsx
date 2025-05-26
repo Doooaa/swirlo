@@ -36,6 +36,8 @@ const Favorites = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
+  const user = localStorage.getItem("user");
+
   const {
     data: {
       favorites = [],
@@ -48,6 +50,7 @@ const Favorites = () => {
     queryKey: ["favorites", currentPage],
     queryFn: () => favoritesServices.fetchFavorites(currentPage),
     keepPreviousData: true,
+    enabled: !!user, // query only runs if user exists
   });
 
   const handlePagination = (newPage) => {
@@ -56,8 +59,8 @@ const Favorites = () => {
     }
   };
 
-  if (error) {
-    toast.error(error.message || "Failed to fetch favorites");
+  if (user && error) {
+    toast.error(error.response.data.message || "Failed to fetch favorites");
   }
 
   const { mutateAsync: removeFromFavorites, isPending: isRemoving } =
@@ -68,7 +71,7 @@ const Favorites = () => {
         toast.success("Item removed from favorites!");
       },
       onError: (error) => {
-        toast.error(`Failed to remove: ${error.message}`);
+        toast.error(`Failed to remove: ${error.response.data.message}`);
       },
     });
 
@@ -79,14 +82,14 @@ const Favorites = () => {
       toast.success("Your Favorites is Cleared!");
     },
     onError: (error) => {
-      toast.error(`Failed to clear: ${error.message}`);
+      toast.error(`Failed to clear: ${error.response.data.message}`);
     },
   });
 
-  if (isLoading || isRemoving || isClearing)
+  if (user && (isLoading || isRemoving || isClearing))
     return <LoadingSpinner></LoadingSpinner>;
 
-  if (error) toast.error(`${error}`);
+  if (user && error) toast.error(`${error.response.data.message}`);
 
   return (
     <Box

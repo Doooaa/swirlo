@@ -12,6 +12,7 @@ import {
   InputLabel,
   OutlinedInput,
   FormHelperText,
+  CircularProgress,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -25,14 +26,14 @@ import { toast } from "react-toastify";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 export default function Login() {
-  const {login, handleLoginSuccess, handelLoginError } = useAuth();
+  const { login, handleLoginSuccess, handelLoginError } = useAuth();
 
   const navigate = useNavigate();
   const onSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
     handleLoginSuccess(decoded, credentialResponse.credential, navigate);
   };
-  
+
   // Show Password
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => {
@@ -68,15 +69,22 @@ export default function Login() {
     }
     console.log("submitted");
   };
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        email: "",
-        password: "",
-      },
-      validationSchema: loginSchema,
-      onSubmit,
-    });
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    isSubmitting,
+  } = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: loginSchema,
+    onSubmit,
+  });
 
   return (
     <Box
@@ -229,7 +237,14 @@ export default function Login() {
               },
             }}
           >
-            Sign In
+            {isSubmitting ? (
+              <CircularProgress
+                size={24}
+                sx={{ color: "var(--main-background)" }}
+              />
+            ) : (
+              "Sign In"
+            )}
           </Button>
         </Stack>
       </Box>

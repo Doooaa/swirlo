@@ -6,7 +6,8 @@ const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
   // State user to store login info (local state)
-  const [userState, setUserState] = useState(()=>{const storedUser = localStorage.getItem("user");
+  const [userState, setUserState] = useState(() => {
+    const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
@@ -28,11 +29,11 @@ export default function AuthProvider({ children }) {
     onSuccess: (data) => {
       queryClient.setQueryData(["auth", "user"], data.user);
       const userData = {
-        name:data.user.name,
-        email:data.user.email,
-        role:data.user.role,
-      }
-      localStorage.setItem("user",JSON.stringify(userData))
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
       console.log("Login successful, role:", userData);
     },
   });
@@ -52,7 +53,7 @@ export default function AuthProvider({ children }) {
     mutationFn: logout,
     onSuccess: () => {
       queryClient.removeQueries(["auth", "user"]);
-      localStorage.removeItem("user")
+      localStorage.removeItem("user");
       setUserState(null);
       navigate("/");
     },
@@ -68,16 +69,14 @@ export default function AuthProvider({ children }) {
     navigate("/");
   };
 
-  const handleLogout = (navigate) => {
-   
-  };
+  const handleLogout = (navigate) => {};
 
   const handelLoginError = () => {
     console.log("error in login with google api ");
   };
 
   const value = {
-    user: userState || user, 
+    user: userState || user,
     isLoading,
     isAuthenticated: !!user && !isError,
     login: loginMutation.mutateAsync,

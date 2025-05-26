@@ -78,7 +78,8 @@ const Navbar = () => {
               : "0 2px 10px rgba(0,0,0,0.1)",
           zIndex: 10,
           overflowX: "hidden",
-        }}>
+        }}
+      >
         <Toolbar
           sx={{
             maxWidth: "1450px",
@@ -87,7 +88,8 @@ const Navbar = () => {
             justifyContent: "space-between",
             display: "flex",
             padding: "0",
-          }}>
+          }}
+        >
           {/* Left: Logo */}
           <Box
             component={RouterLink}
@@ -96,7 +98,8 @@ const Navbar = () => {
               display: "flex",
               alignItems: "center",
               textDecoration: "none",
-            }}>
+            }}
+          >
             <Box
               component="img"
               src={logoImg}
@@ -123,7 +126,8 @@ const Navbar = () => {
                     "&:hover, &:active": {
                       color: "var(--primary)",
                     },
-                  }}>
+                  }}
+                >
                   {label}
                 </Typography>
               ))}
@@ -146,7 +150,8 @@ const Navbar = () => {
                   mx: 2,
                 }}
                 component="form"
-                onSubmit={handleSubmit}>
+                onSubmit={handleSubmit}
+              >
                 <SearchIcon
                   fontSize="small"
                   sx={{ color: "var(--tertiary)" }}
@@ -163,7 +168,7 @@ const Navbar = () => {
             <Box sx={{ mr: isMobile ? 0 : 5 }}>
               <IconButton
                 component={RouterLink}
-                to={"/profile"}
+                to={localStorage.getItem("user") ? "/profile" : "/login"}
                 sx={{
                   color:
                     location.pathname === "/profile"
@@ -172,7 +177,8 @@ const Navbar = () => {
                   "&:hover, &:active": {
                     color: "var(--primary)",
                   },
-                }}>
+                }}
+              >
                 <AccountCircleIcon />
               </IconButton>
               <IconButton
@@ -186,7 +192,8 @@ const Navbar = () => {
                   "&:hover, &:active": {
                     color: "var(--primary)",
                   },
-                }}>
+                }}
+              >
                 <FavoriteBorderIcon />
               </IconButton>
               <IconButton
@@ -200,7 +207,8 @@ const Navbar = () => {
                   "&:hover, &:active": {
                     color: "var(--primary)",
                   },
-                }}>
+                }}
+              >
                 <ShoppingCartIcon />
               </IconButton>
             </Box>
@@ -215,7 +223,8 @@ const Navbar = () => {
                   color: "var(--primary)",
                 },
               }}
-              onClick={() => setDrawerOpen(true)}>
+              onClick={() => setDrawerOpen(true)}
+            >
               <MenuIcon />
             </IconButton>
           )}
@@ -231,7 +240,8 @@ const Navbar = () => {
           "& .MuiDrawer-paper": {
             backgroundColor: "var(--light-bg)",
           },
-        }}>
+        }}
+      >
         <Box sx={{ width: 250, p: 2 }}>
           <Box
             sx={{
@@ -247,7 +257,8 @@ const Navbar = () => {
               mb: 1,
             }}
             component="form"
-            onSubmit={handleSubmit}>
+            onSubmit={handleSubmit}
+          >
             <SearchIcon fontSize="small" sx={{ color: "var(--tertiary)" }} />
             <InputBase
               placeholder="Search…"
@@ -274,7 +285,8 @@ const Navbar = () => {
                     color: "var(--primary)",
                   },
                 }}
-                onClick={() => setDrawerOpen(false)}>
+                onClick={() => setDrawerOpen(false)}
+              >
                 <ListItemText primary={label} />
               </ListItem>
             ))}

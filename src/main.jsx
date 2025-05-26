@@ -13,7 +13,9 @@ import Home from "./pages/Home/Home";
 import { lazy, Suspense } from "react";
 const AboutComponent = lazy(() => import("../src/pages/About/About.jsx"));
 import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
-const ContactsComponent = lazy(() => import("../src/pages/Contact/Contact.jsx"));
+const ContactsComponent = lazy(() =>
+  import("../src/pages/Contact/Contact.jsx")
+);
 const ProfileComponent = lazy(() => import("../src/pages/Profile/Profile.jsx"));
 import NotFound from "./pages/NotFound/NotFound";
 import Login from "./pages/Login/Login";
@@ -23,13 +25,6 @@ import Checkout from "./pages/Checkout/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation/OrderConfirmation";
 import Products from "./pages/Products/Products";
 import ProductDetails from "./pages/ProductDetails/ProductDetails.jsx";
-import DashboardHome from "./pages/DashboardHome/DashboardHome";
-import DashboardCategories from "./pages/DashboardCategories/DashboardCategories";
-import DashboardOrders from "./pages/DashboardOrders/DashboardOrders";
-import DashboardProducts from "./pages/DashboardProducts/DashboardProducts";
-import DashboardCoupons from "./pages/DashboardCoupons/DashboardCoupons";
-import DashboardAdmins from "./pages/DashboardAdmins/DashboardAdmins";
-import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import AuthContextProvider from "./context/AuthContext.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import CategoriesContextProvider from "./context/CategoriesContext.jsx";
@@ -100,29 +95,6 @@ const router = createBrowserRouter([
       { path: "menu-items", element: <Products></Products> },
       { path: "menu-items/:id", element: <ProductDetails></ProductDetails> },
       { path: "menu-items/:category", element: <CategoryProducts /> },
-
-      // ^ dashboard
-      {
-        path: "dashboard",
-        element: <Dashboard></Dashboard>,
-        children: [
-          {
-            index: true,
-            element: <DashboardHome></DashboardHome>,
-          },
-          {
-            path: "categories",
-            element: <DashboardCategories></DashboardCategories>,
-          },
-          {
-            path: "menu-items",
-            element: <DashboardProducts></DashboardProducts>,
-          },
-          { path: "coupons", element: <DashboardCoupons></DashboardCoupons> },
-          { path: "orders", element: <DashboardOrders></DashboardOrders> },
-          { path: "admins", element: <DashboardAdmins></DashboardAdmins> },
-        ],
-      },
       { path: "*", element: <NotFound></NotFound> },
     ],
   },

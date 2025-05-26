@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Typography, Grid, Container, Button } from "@mui/material";
 import coffeeBeans from "../../assets/coffeeBeans.jpg";
 import foam from "../../assets/foam.png";

@@ -105,7 +105,12 @@ export default function RelatedProducts({
                 product={product}
                 onAddToCart={() => handleAddToCart(product._id)}
                 onToggleFavorite={() => handleToggleFavorite(product._id)}
-                onProductClick={onProductClick}
+                onProductClick={() =>
+                  onProductClick(
+                    product.categoryID?.name || "category",
+                    product._id
+                  )
+                }
                 sx={{ width: "250px", aspectRatio: "2/3", height: "66%" }}
               />
             </Box>

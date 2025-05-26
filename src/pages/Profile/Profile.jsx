@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import * as Yup from "yup";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { IconButton, InputAdornment } from "@mui/material";
 import {
   Container,
   Typography,
@@ -19,7 +22,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -69,6 +71,21 @@ const Profile = () => {
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [showPassword, setShowPassword] = useState({
+    old: false,
+    new: false,
+    confirm: false,
+  });
+
+  const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
+
+  const toggleShowPassword = (field) => {
+    setShowPassword((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
+  };
+
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
@@ -95,6 +112,42 @@ const Profile = () => {
       setCurrentPage(newPage);
     }
   };
+
+  // *validation
+  // Profile data validation schema
+  const profileValidationSchema = Yup.object().shape({
+    name: Yup.string()
+      .min(3, "Name must be at least 3 characters")
+      .required("Name is required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    address: Yup.string()
+      .min(3, "Address must be at least 3 characters")
+      .required("Address is required"),
+  });
+
+  // Password change validation schema
+  const passwordValidationSchema = Yup.object().shape({
+    oldPassword: Yup.string()
+      .required("Current password is required")
+      .min(8, "Password must be at least 8 characters")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/,
+        "Must contain uppercase, lowercase, number, and special character"
+      ),
+    newPassword: Yup.string()
+      .required("New password is required")
+      .min(8, "Password must be at least 8 characters")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/,
+        "Must contain uppercase, lowercase, number, and special character"
+      )
+      .notOneOf(
+        [Yup.ref("oldPassword"), null],
+        "New password must be different from current password"
+      ),
+  });
 
   // * get profile data
 
@@ -147,10 +200,11 @@ const Profile = () => {
   const personalDataForm = useFormik({
     enableReinitialize: true,
     initialValues: {
-      name: profileData.name,
-      email: profileData.email,
-      address: profileData.address?.[profileData?.address?.length - 1],
+      name: profileData.name || "",
+      email: profileData.email || "",
+      address: profileData.address?.[profileData?.address?.length - 1] || "",
     },
+    validationSchema: profileValidationSchema,
     onSubmit: async (values) => {
       await updateUserData(values);
       setEditMode(false);
@@ -167,6 +221,7 @@ const Profile = () => {
       oldPassword: "",
       newPassword: "",
     },
+    validationSchema: passwordValidationSchema,
     onSubmit: async (values) => {
       if (values.newPassword !== confirmPassword) {
         toast.error("New passwords do not match!");
@@ -243,8 +298,17 @@ const Profile = () => {
                   <TextField
                     name="email"
                     label="Email"
-                    value={personalDataForm.values.email || profileData?.email}
+                    value={personalDataForm.values.email || ""}
                     onChange={personalDataForm.handleChange}
+                    onBlur={personalDataForm.handleBlur}
+                    error={
+                      personalDataForm.touched.email &&
+                      personalDataForm.errors.email
+                    }
+                    helperText={
+                      personalDataForm.touched.email &&
+                      personalDataForm.errors.email
+                    }
                     fullWidth
                     size={isMobile ? "small" : "medium"}
                     sx={{
@@ -286,11 +350,17 @@ const Profile = () => {
                   <TextField
                     name="address"
                     label="Address"
-                    value={
-                      personalDataForm.values.address ||
-                      profileData?.address?.[profileData.address.length - 1]
-                    }
+                    value={personalDataForm.values.address || ""}
                     onChange={personalDataForm.handleChange}
+                    onBlur={personalDataForm.handleBlur}
+                    error={
+                      personalDataForm.touched.address &&
+                      personalDataForm.errors.address
+                    }
+                    helperText={
+                      personalDataForm.touched.address &&
+                      personalDataForm.errors.address
+                    }
                     fullWidth
                     size={isMobile ? "small" : "medium"}
                     sx={{
@@ -667,8 +737,17 @@ const Profile = () => {
                     <TextField
                       name="name"
                       label="Name"
-                      value={personalDataForm.values.name || profileData?.name}
+                      value={personalDataForm.values.name || ""}
                       onChange={personalDataForm.handleChange}
+                      onBlur={personalDataForm.handleBlur}
+                      error={
+                        personalDataForm.touched.name &&
+                        personalDataForm.errors.name
+                      }
+                      helperText={
+                        personalDataForm.touched.name &&
+                        personalDataForm.errors.name
+                      }
                       fullWidth
                       size={isMobile ? "small" : "medium"}
                       sx={{
@@ -694,6 +773,7 @@ const Profile = () => {
                       variant={isMobile ? "h6" : "h5"}
                       component="h1"
                       gutterBottom
+                      sx={{ textTransform: "capitalize" }}
                     >
                       {profileData.name}
                     </Typography>
@@ -788,17 +868,40 @@ const Profile = () => {
           >
             <DialogTitle>Change Password</DialogTitle>
             <DialogContent>
+              {/* Current Password Field */}
               <TextField
                 autoFocus
                 margin="dense"
                 label="Current Password"
-                type="password"
+                type={showPassword.old ? "text" : "password"}
                 name="oldPassword"
                 fullWidth
                 variant="outlined"
                 value={passwordForm.values.oldPassword}
                 onChange={passwordForm.handleChange}
+                onBlur={passwordForm.handleBlur}
+                error={
+                  passwordForm.touched.oldPassword &&
+                  passwordForm.errors.oldPassword
+                }
+                helperText={
+                  passwordForm.touched.oldPassword &&
+                  passwordForm.errors.oldPassword
+                }
                 size={isMobile ? "small" : "medium"}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => toggleShowPassword("old")}
+                        edge="end"
+                      >
+                        {showPassword.old ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
                 sx={{
                   mb: 2,
                   "& .MuiOutlinedInput-root": {
@@ -817,16 +920,40 @@ const Profile = () => {
                   },
                 }}
               />
+
+              {/* New Password Field */}
               <TextField
                 margin="dense"
                 label="New Password"
-                type="password"
+                type={showPassword.new ? "text" : "password"}
                 name="newPassword"
                 fullWidth
                 variant="outlined"
                 value={passwordForm.values.newPassword}
                 onChange={passwordForm.handleChange}
+                onBlur={passwordForm.handleBlur}
+                error={
+                  passwordForm.touched.newPassword &&
+                  passwordForm.errors.newPassword
+                }
+                helperText={
+                  passwordForm.touched.newPassword &&
+                  passwordForm.errors.newPassword
+                }
                 size={isMobile ? "small" : "medium"}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => toggleShowPassword("new")}
+                        edge="end"
+                      >
+                        {showPassword.new ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
                 sx={{
                   mb: 2,
                   "& .MuiOutlinedInput-root": {
@@ -845,16 +972,46 @@ const Profile = () => {
                   },
                 }}
               />
+
+              {/* Confirm Password Field */}
               <TextField
                 margin="dense"
                 label="Confirm New Password"
-                type="password"
+                type={showPassword.confirm ? "text" : "password"}
                 name="confirmPassword"
                 fullWidth
                 variant="outlined"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                onBlur={() => setConfirmPasswordTouched(true)}
+                error={
+                  confirmPasswordTouched &&
+                  confirmPassword !== passwordForm.values.newPassword
+                }
+                helperText={
+                  confirmPasswordTouched &&
+                  confirmPassword !== passwordForm.values.newPassword
+                    ? "Passwords do not match"
+                    : ""
+                }
                 size={isMobile ? "small" : "medium"}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => toggleShowPassword("confirm")}
+                        edge="end"
+                      >
+                        {showPassword.confirm ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {

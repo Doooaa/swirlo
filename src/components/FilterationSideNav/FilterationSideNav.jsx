@@ -226,8 +226,8 @@ const FilterationSideNav = ({ onFilterChange }) => {
             value={localFilters.price}
             onChange={handlePriceChange}
             onChangeCommitted={(e, val) => handlePriceChange(e, val)}
-            min={0}
-            max={1000}
+            min={25}
+            max={600}
             step={10}
             valueLabelDisplay="auto"
             aria-labelledby="price-slider"

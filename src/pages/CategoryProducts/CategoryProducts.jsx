@@ -1,65 +1,53 @@
-import React from "react";
-import { useProductsContext } from "../../context/ProductsContext";
-import { useParams } from "react-router";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+import { getProductByCategory } from "../../services/productsApi";
 
 const CategoryProducts = () => {
- const { category } = useParams();
-  const { getProductCategry, setPage, page, limit } = useProductsContext();
-  
-  const { 
-    data: productsCategory, 
-    isError, 
-    error, 
-    isLoading 
-  } = getProductCategry(category, page, limit);
-  
-  if (isLoading) return <LoadingSpinner />;
-  if (isError) {
-    toast.error(`Error: ${error.message}`);
-    return null;
-  }
+  const { categoryName } = useParams();
+
+  // 2) Fire off React-Query fetch using that param
+  const {
+    data: products = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery(
+    ["productsByCategory", categoryName],
+    () => getProductByCategory(categoryName, /* page= */ 1, /* limit= */ 10),
+    {
+      keepPreviousData: true,
+      staleTime: 1000 * 60 * 2,
+    }
+  );
+
+  if (isLoading) return <p>Loading products for “{categoryName}”…</p>;
+  if (isError) return <p>Couldn’t load “{categoryName}” products.</p>;
 
   return (
     <div>
-      <Box sx={{ paddingLeft: { md: "290px" } }}>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: 4,
-            justifyContent: "center",
-            marginY: 4,
-          }}
-        >
-          {productsCategory?.data?.map((product) => (
-            <ProductCard
-              key={product._id}
-              product={{
-                thumbnail: product.thumbnail,
-                title: product.title,
-                avgRating: product.avgRating,
-                price: product.price,
-                label: product.label || "no label",
-                _id: product._id,
-              }}
-              onAddToCart={() =>console.log("dd")}
-              onToggleFavorite={() => console.log("dd")}
-              onProductClick={() => console.log("dd")}
-              sx={{ width: "290px", aspectRatio: "2/3", height: "66%" }}
+      <h2>Category: “{categoryName}”</h2>
+      <ul>
+        {products.map((p) => (
+          <li key={p._id} style={{ marginBottom: "1rem" }}>
+            <img
+              src={p.thumbnail}
+              alt={p.title}
+              style={{ width: 100, height: 100 }}
             />
-          ))}
-        </Box>
-        <PaginationComponent
-          currentPage={page}
-          handlePagination={setPage}
-          totalPages={productsCategory?.totalPages || 1}
-        />
-      </Box>
+            <div>
+              <strong>{p.title}</strong>
+              <p>{p.description}</p>
+              <small>Price: {p.price} EGP</small>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
+
 
 export default CategoryProducts;

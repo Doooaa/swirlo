@@ -1,11 +1,12 @@
 import { Box, Typography } from "@mui/material";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import { useCategoriesContext } from "../../context/CategoriesContext";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 
 export default function CategoryCard() {
   const { categories, isLoading, isError } = useCategoriesContext();
+  const navigate = useNavigate();
   if (isLoading) return <LoadingSpinner />;
   if (isError) return toast.error("Error loading categories");
 
@@ -26,6 +27,7 @@ export default function CategoryCard() {
         {categories?.map((cat) => (
           <Box
             key={cat._id}
+            onClick={() => navigate(`/menu-items/${cat.name}`)}
             sx={{
               alignItems: "center",
               justifyContent: "center",
@@ -58,10 +60,7 @@ export default function CategoryCard() {
               />
             </Box>
             <Typography
-              component={Link}
-              to="/login"
               sx={{
-                // color: "black",
                 cursor: "pointer",
                 textDecoration: "none",
                 fontWeight: "700",

@@ -11,16 +11,33 @@ export const ProductsContext = createContext();
 export default function ProductsContextProvider({ children }) {
   const [page, setPage] = useState(1);
   const limit = 12;
+  const [category, setCategory] = useState("");
 
   const {
-    data: products,
-    isLoading,
-    isError,
-    error,
+    data: allProductsResponse,
+    isLoading: allLoading,
+    isError: allError,
+    error: allErrorObj,
   } = useQuery({
     queryKey: ["products", page],
     queryFn: () => fetchProducts(page, limit),
+    keepPreviousData: true,
   });
+
+  // products filtered by category
+  const {
+    data: categoryProductsResponse = { data: [] },
+    isLoading: catLoading,
+    isError: catError,
+    refetch: refetchByCategory,
+  } = useQuery({
+    queryKey: ["productsByCategory", category, page, limit],
+    queryFn: () => getProductByCategory(category, page, limit),
+    keepPreviousData: true,
+    staleTime: 1000 * 60 * 2,
+    enabled: !!category,
+  });
+  
 
   const getProductDetails = (id) => {
     return useQuery({
@@ -29,23 +46,27 @@ export default function ProductsContextProvider({ children }) {
     });
   };
 
-  const getProductCategry = (categoryName, page, limit) => {
-    return useQuery({
-      queryKey: ["categoryProducts", categoryName, page],
-      queryFn: () => getProductByCategory(categoryName, page, limit),
-    });
-  };
-
   const value = {
-    products: products?.data || [],
-    isLoading,
-    isError,
-    error,
+    products: allProductsResponse?.data,
+    allLoading,
+    allError,
+    allErrorObj,
+
+    // category-specific
+    productsCat: categoryProductsResponse.data,
+    catLoading,
+    catError,
+    refetchByCategory,
+
+    // pagination + category controls
     page,
     setPage,
+    limit,
+    category,
+    setCategory,
     getProductDetails,
-    getProductCategry,
   };
+  
 
   return (
     <ProductsContext.Provider value={value}>

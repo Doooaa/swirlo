@@ -218,10 +218,16 @@ export default function ProductDetails() {
       <Review></Review>
       <Box sx={{ maxWidth: "1200px", mx: "auto", px: { xs: 2, md: 6 } }}>
         <RelatedProducts
+        
           categoryId={prd.categoryID}
           currentProductId={prd._id}
-          onProductClick={(prd) => {
-            navigate(`/menu-items/${prd}`);
+          // onProductClick={(prd) => {
+          //   navigate(`/menu-items/${prd}`);
+          // }}
+          onProductClick={(categoryName, productId) => {
+            navigate(
+              `/menu-items/${encodeURIComponent(categoryName)}/${productId}`
+            );
           }}
         />
       </Box>

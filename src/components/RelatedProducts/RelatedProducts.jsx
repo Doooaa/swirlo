@@ -1,13 +1,14 @@
+import { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
+import { toast } from "react-toastify";
 import ProductCard from "../ProductCard/ProductCard";
+import { useCart } from "../../context/CartContext";
 import { useProductsContext } from "../../context/ProductsContext";
-import { useState, useEffect } from "react";
-// import { useCartContext } from "../../context/CartContext";
 import { useFavoritesContext } from "../../context/FavoritesContext";
 
 export default function RelatedProducts({
@@ -15,8 +16,8 @@ export default function RelatedProducts({
   currentProductId,
   onProductClick,
 }) {
+  const { addToCart } = useCart();
   const { products, isLoading, isError } = useProductsContext();
-  // const { addToCart } = useCartContext();
   const { addToFav, removeFromFav, isFavorited } = useFavoritesContext();
 
   const [cardsPerView, setCardsPerView] = useState(1);
@@ -47,9 +48,16 @@ export default function RelatedProducts({
 
   const slidesToShow = Math.min(cardsPerView, relatedProducts.length);
 
+  // check user is logged ?
+  const user = localStorage.getItem("user");
+
   const handleAddToCart = (productId) => {
-    // addToCart(productId);
-    console.log(`Product ${productId} added to cart`);
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+    toast.success("item added to cart successfully");
+    addToCart(productId);
   };
 
   const handleToggleFavorite = (productId) => {

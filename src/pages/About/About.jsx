@@ -1,6 +1,6 @@
 import React from "react";
 import AboutBg from "../../components/AboutSec/AboutBg";
-import AboutOne from "../../components/AboutSec/AboutOne";
+import AboutOne from "../../components/AboutSec/aboutOne";
 import AboutMid from "../../components/AboutSec/AboutMid";
 import AboutTwo from "../../components/AboutSec/AboutTwo";
 import AboutImage from "../../../src/assets/about-bg.png";

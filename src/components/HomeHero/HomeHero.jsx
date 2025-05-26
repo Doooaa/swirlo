@@ -11,6 +11,7 @@ import img4 from "../../assets/slider4.png";
 
 import { Box, Grid } from "@mui/material";
 import { useNavigate } from "react-router";
+import { grey } from "@mui/material/colors";
 
 export default function HomeHero() {
   const images = useMemo(() => [img1, img2, img3, img4], []);
@@ -50,7 +51,11 @@ export default function HomeHero() {
       }}
     >
       {/* LEFT SIDE: TEXT */}
-      <Stack spacing={3} flex={1} sx={{ textAlign: { xs: "center", md: "left" } }}>
+      <Stack
+        spacing={3}
+        flex={1}
+        sx={{ textAlign: { xs: "center", md: "left" } }}
+      >
         <Typography
           variant="h2"
           sx={{
@@ -64,7 +69,8 @@ export default function HomeHero() {
           <Box
             component="span"
             sx={{
-              background: "linear-gradient(to right, var(--primary), var(--tertiary))",
+              background:
+                "linear-gradient(to right, var(--primary), var(--tertiary))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               fontWeight: 800,
@@ -77,12 +83,14 @@ export default function HomeHero() {
         <Typography
           variant="body1"
           sx={{
-            color: "var(--primary)",
+            color: grey[900],
             maxWidth: { xs: "400px", lg: "500px" },
             mx: { xs: "auto", md: 0 },
           }}
         >
-          Discover the finest coffee, sourced ethically and roasted to perfection. From bold blends to single origins, elevate your coffee ritual.
+          Discover the finest coffee, sourced ethically and roasted to
+          perfection. From bold blends to single origins, elevate your coffee
+          ritual.
         </Typography>
 
         <ThemeProvider theme={themeC}>
@@ -129,7 +137,12 @@ export default function HomeHero() {
             objectFit: "cover",
           }}
         />
-        <Stack direction={{ xs: "row", md: "column" }} spacing={2} justifyContent="center" alignItems="center">
+        <Stack
+          direction={{ xs: "row", md: "column" }}
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+        >
           {images.map((img, idx) => (
             <Box
               key={idx}
@@ -142,7 +155,10 @@ export default function HomeHero() {
                 height: { xs: "60px", md: "80px" },
                 borderRadius: 2,
                 cursor: "pointer",
-                border: idx === counter ? "2px solid #ff9900" : "2px solid transparent",
+                border:
+                  idx === counter
+                    ? "2px solid #ff9900"
+                    : "2px solid transparent",
                 transition: "0.3s",
                 objectFit: "cover",
                 p: 1,

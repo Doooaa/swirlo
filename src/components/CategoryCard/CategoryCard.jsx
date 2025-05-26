@@ -10,7 +10,6 @@ export default function CategoryCard() {
   if (isLoading) return <LoadingSpinner />;
   if (isError) return toast.error("Error loading categories");
 
-
   return (
     <div>
       <Box

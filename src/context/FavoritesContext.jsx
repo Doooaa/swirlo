@@ -11,6 +11,7 @@ export default function FavoritesContextProvider({ children }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch favorites with pagination
+  const user = localStorage.getItem("user");
   const {
     data = {},
     isLoading,
@@ -19,6 +20,7 @@ export default function FavoritesContextProvider({ children }) {
     queryKey: ["favorites", currentPage],
     queryFn: () => favoritesServices.fetchFavorites(currentPage),
     keepPreviousData: true,
+    enabled: !!user,
   });
 
   const { favorites = [], totalPages = 1 } = data;
@@ -38,7 +40,7 @@ export default function FavoritesContextProvider({ children }) {
       toast.success("Item added to favorites!");
     },
     onError: (error) => {
-      toast.error(`Failed to add: ${error.message}`);
+      toast.error(`Failed to add: ${error.response.data.message}`);
     },
   });
 
@@ -50,7 +52,7 @@ export default function FavoritesContextProvider({ children }) {
       toast.success("Item removed from favorites!");
     },
     onError: (error) => {
-      toast.error(`Failed to remove: ${error.message}`);
+      toast.error(`Failed to remove: ${error.response.data.message}`);
     },
   });
 
@@ -71,7 +73,7 @@ export default function FavoritesContextProvider({ children }) {
   }
 
   if (error) {
-    toast.error(error.message || "Failed to fetch favorites");
+    toast.error(error.response.data.message || "Failed to fetch favorites");
   }
 
   return (
@@ -84,7 +86,8 @@ export default function FavoritesContextProvider({ children }) {
         currentPage,
         totalPages,
         handlePagination,
-      }}>
+      }}
+    >
       {children}
     </FavoritesContext.Provider>
   );

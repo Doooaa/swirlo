@@ -10,7 +10,7 @@ export const ProductsContext = createContext();
 
 export default function ProductsContextProvider({ children }) {
   const [page, setPage] = useState(1);
-  const limit = 12;
+  const limit = 8;
   const [category, setCategory] = useState("");
 
   const {
@@ -37,7 +37,6 @@ export default function ProductsContextProvider({ children }) {
     staleTime: 1000 * 60 * 2,
     enabled: !!category,
   });
-  
 
   const getProductDetails = (id) => {
     return useQuery({
@@ -66,7 +65,6 @@ export default function ProductsContextProvider({ children }) {
     setCategory,
     getProductDetails,
   };
-  
 
   return (
     <ProductsContext.Provider value={value}>

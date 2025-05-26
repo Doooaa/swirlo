@@ -68,13 +68,14 @@ export default function HomeSecOne() {
       <Box
         position="relative"
         sx={{
-          background: "#fff",
+          background: "var(--main-background)",
           minHeight: { xs: "auto", lg: "100vh" },
           py: { xs: 6, lg: 0 },
           display: "flex",
           alignItems: "center",
           overflow: "hidden",
-        }}>
+        }}
+      >
         {/* Leaves above all */}
         <Box
           sx={{
@@ -85,7 +86,8 @@ export default function HomeSecOne() {
             height: "100%",
             pointerEvents: "none",
             zIndex: 5,
-          }}>
+          }}
+        >
           <Parallax speed={8}>
             <Box
               component="img"
@@ -130,7 +132,8 @@ export default function HomeSecOne() {
             <Grid
               size={{ xs: 12, md: 4 }}
               display={{ xs: "none", md: "flex" }}
-              justifyContent="center">
+              justifyContent="center"
+            >
               <Box
                 component="img"
                 src={cup}

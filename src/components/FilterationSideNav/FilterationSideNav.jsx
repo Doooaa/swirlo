@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import {
   Drawer,
   List,
@@ -33,12 +33,11 @@ const FilterationSideNav = ({ onFilterChange }) => {
   // State for selected filters
   const [localFilters, setLocalFilters] = useState({
     // Coffee
-    hotCoffee: false,
+    coffee: false,
     icedCoffee: false,
     espresso: false,
     latte: false,
     cappuccino: false,
-    flavoredCoffee: false,
     // Cold Drinks
     icedTea: false,
     lemonade: false,
@@ -57,6 +56,7 @@ const FilterationSideNav = ({ onFilterChange }) => {
     bagels: false,
     pancakes: false,
     oatmeal: false,
+    combo: false,
     // Price
     price: 200, // Default max price
   });
@@ -91,25 +91,24 @@ const FilterationSideNav = ({ onFilterChange }) => {
     const selectedFilters = [];
 
     // Coffee filters
-    if (currentFilters.hotCoffee) selectedFilters.push("hot coffee");
+    if (currentFilters.coffee) selectedFilters.push("coffee");
     if (currentFilters.icedCoffee) selectedFilters.push("iced coffee");
-    if (currentFilters.espresso) selectedFilters.push("espresso");
+    if (currentFilters.espresso) selectedFilters.push("espres");
     if (currentFilters.latte) selectedFilters.push("latte");
     if (currentFilters.cappuccino) selectedFilters.push("cappuccino");
-    if (currentFilters.flavoredCoffee) selectedFilters.push("flavored");
 
     // Cold drinks filters
     if (currentFilters.icedTea) selectedFilters.push("iced tea");
     if (currentFilters.lemonade) selectedFilters.push("lemonad");
     if (currentFilters.smoothies) selectedFilters.push("smooth");
     if (currentFilters.frappes) selectedFilters.push("frappe");
-    if (currentFilters.softDrinks) selectedFilters.push("soft drinks");
+    if (currentFilters.softDrinks) selectedFilters.push("soft drink");
 
     // Pastries
     if (currentFilters.croissants) selectedFilters.push("croissant");
     if (currentFilters.muffins) selectedFilters.push("muffin");
-    if (currentFilters.danishes) selectedFilters.push("danishe");
-    if (currentFilters.scones) selectedFilters.push("scone");
+    if (currentFilters.danishes) selectedFilters.push("danish");
+    if (currentFilters.scones) selectedFilters.push("scon");
 
     // Cakes
     if (currentFilters.cupcakes) selectedFilters.push("cupcake");
@@ -119,6 +118,8 @@ const FilterationSideNav = ({ onFilterChange }) => {
     if (currentFilters.bagels) selectedFilters.push("bagel");
     if (currentFilters.pancakes) selectedFilters.push("pancake");
     if (currentFilters.oatmeal) selectedFilters.push("oatmeal");
+
+    if (currentFilters.combo) selectedFilters.push("combo");
 
     const query = {
       title: selectedFilters.join(", "),
@@ -138,8 +139,8 @@ const FilterationSideNav = ({ onFilterChange }) => {
           onClick={handleDrawerToggle}
           sx={{
             position: "fixed",
-            bottom: 20,
-            right: 20,
+            bottom: 30,
+            right: 30,
             zIndex: 1200,
             backgroundColor: "var(--light-color)",
             color: "white",
@@ -147,9 +148,11 @@ const FilterationSideNav = ({ onFilterChange }) => {
               backgroundColor: "var(--accent)",
               color: "var(--primary)",
             },
+            width: "50px",
+            height: "50px",
           }}
         >
-          <FilterIcon />
+          <FilterIcon sx={{ fontSize: "30px" }} />
         </IconButton>
       )}
 
@@ -164,6 +167,8 @@ const FilterationSideNav = ({ onFilterChange }) => {
           maxWidth: isMobile ? "80%" : "280px",
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
+            position: !isMobile ? "absolute" : "fixed",
+            zIndex: !isMobile ? "5" : "200000",
             width: isMobile ? "80%" : "280px",
             boxSizing: "border-box",
             backgroundColor: "var(--light-bg)",
@@ -221,8 +226,8 @@ const FilterationSideNav = ({ onFilterChange }) => {
             value={localFilters.price}
             onChange={handlePriceChange}
             onChangeCommitted={(e, val) => handlePriceChange(e, val)}
-            min={0}
-            max={1000}
+            min={25}
+            max={600}
             step={10}
             valueLabelDisplay="auto"
             aria-labelledby="price-slider"
@@ -238,35 +243,30 @@ const FilterationSideNav = ({ onFilterChange }) => {
           </ListItem>
           <Collapse in={expandedCategory === "coffee"} timeout="auto">
             <List component="div" disablePadding>
-              {[
-                "hotCoffee",
-                "icedCoffee",
-                "espresso",
-                "latte",
-                "cappuccino",
-                "flavoredCoffee",
-              ].map((item) => (
-                <ListItem key={item} sx={{ pl: 4 }}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={localFilters[item]}
-                        onChange={handleFilterChange(item)}
-                        size="small"
-                        sx={{
-                          color: "var(--light-color)",
-                          "&.Mui-checked": {
+              {["coffee", "icedCoffee", "espresso", "latte", "cappuccino"].map(
+                (item) => (
+                  <ListItem key={item} sx={{ pl: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={localFilters[item]}
+                          onChange={handleFilterChange(item)}
+                          size="small"
+                          sx={{
                             color: "var(--light-color)",
-                          },
-                        }}
-                      />
-                    }
-                    label={item
-                      .replace(/([A-Z])/g, " $1")
-                      .replace(/^./, (str) => str.toUpperCase())}
-                  />
-                </ListItem>
-              ))}
+                            "&.Mui-checked": {
+                              color: "var(--light-color)",
+                            },
+                          }}
+                        />
+                      }
+                      label={item
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())}
+                    />
+                  </ListItem>
+                )
+              )}
             </List>
           </Collapse>
           <Divider />
@@ -386,6 +386,38 @@ const FilterationSideNav = ({ onFilterChange }) => {
           <Collapse in={expandedCategory === "breakfast"} timeout="auto">
             <List component="div" disablePadding>
               {["bagels", "pancakes", "oatmeal"].map((item) => (
+                <ListItem key={item} sx={{ pl: 4 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={localFilters[item]}
+                        onChange={handleFilterChange(item)}
+                        size="small"
+                        sx={{
+                          color: "var(--light-color)",
+                          "&.Mui-checked": {
+                            color: "var(--light-color)",
+                          },
+                        }}
+                      />
+                    }
+                    label={item.charAt(0).toUpperCase() + item.slice(1)}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Collapse>
+          <Divider />
+
+          {/* combo */}
+          {/* Breakfast */}
+          <ListItem button onClick={() => handleExpand("combo")}>
+            <ListItemText primary="Combo" sx={{ fontWeight: "bold" }} />
+            {expandedCategory === "combo" ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={expandedCategory === "combo"} timeout="auto">
+            <List component="div" disablePadding>
+              {["combo"].map((item) => (
                 <ListItem key={item} sx={{ pl: 4 }}>
                   <FormControlLabel
                     control={

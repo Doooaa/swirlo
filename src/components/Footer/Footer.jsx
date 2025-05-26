@@ -1,123 +1,142 @@
-import { Box, Typography } from "@mui/material";
-import FacebookOutlinedIcon from "@mui/icons-material/FacebookOutlined";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import YouTubeIcon from "@mui/icons-material/YouTube";
+import { Grid, Box, Typography } from "@mui/material";
+import {
+  FacebookOutlined,
+  Instagram,
+  Twitter,
+  YouTube,
+} from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
+import logo from "../../assets/logo2.png";
 
 export default function Footer() {
   return (
     <Box
       sx={{
-        px: "60px",
-        py: "60px",
+        marginTop: "auto",
+        px: { xs: 3, sm: 6, md: 8, lg: "60px" },
+        py: { xs: 4, sm: 5, md: "50px" },
         backgroundColor: "var(--tertiary)",
         color: "var(--secondary)",
         minHeight: "320px",
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        gap: "30px",
         backgroundImage: 'url("src/assets/coffee.png")',
-        backgroundSize: "300px",
+        backgroundSize: { xs: "150px", md: "250px", lg: "300px" },
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right bottom",
         backgroundBlendMode: "soft-light",
-      }}>
-      {/* Logo & Description */}
-      <Box
-        sx={{
-          flex: "1 1 250px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 3,
-        }}>
-        <Box
-          component={RouterLink}
-          to="/"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            textDecoration: "none",
-          }}>
+      }}
+    >
+      <Grid container spacing={4}>
+        {/* Logo & Description */}
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <Box
-            component="img"
-            src="src/assets/logo2.png"
-            alt="Logo"
-            sx={{ height: 85, width: "auto" }}
-          />
-        </Box>
-        <Typography variant="body1" sx={{ maxWidth: 300, fontSize: "16px" }}>
-          Premium coffee and pastries crafted with passion since 2010. We bring
-          the authentic Italian café experience to your neighborhood.
-        </Typography>
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <FacebookOutlinedIcon sx={styles.socialMedia} />
-          <InstagramIcon sx={styles.socialMedia} />
-          <TwitterIcon sx={styles.socialMedia} />
-          <YouTubeIcon sx={styles.socialMedia} />
-        </Box>
-      </Box>
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+            }}
+          >
+            <Box
+              component={RouterLink}
+              to="/"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                textDecoration: "none",
+              }}
+            >
+              <Box
+                component="img"
+                src={logo}
+                alt="Logo"
+                sx={{ height: { xs: 65, sm: 75, lg: 85 }, width: "auto" }}
+              />
+            </Box>
+            <Typography
+              variant="body1"
+              sx={{ maxWidth: 300, fontSize: "16px" }}
+            >
+              Premium coffee and pastries crafted with passion since 2010. We
+              bring the authentic Italian café experience to your neighborhood.
+            </Typography>
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <FacebookOutlined sx={styles.socialMedia} />
+              <Instagram sx={styles.socialMedia} />
+              <Twitter sx={styles.socialMedia} />
+              <YouTube sx={styles.socialMedia} />
+            </Box>
+          </Box>
+        </Grid>
 
-      {/* Quick Access */}
-      <Box sx={{ flex: "1 1 150px" }}>
-        <Typography
-          variant="subtitle1"
-          sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}>
-          Quick Access
-        </Typography>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <Box component={RouterLink} to="/home" sx={styles.linkStyle}>
-            Home
+        {/* Quick Access */}
+        <Grid
+          size={{ xs: 12, sm: 6, lg: 3 }}
+          sx={{ paddingTop: { md: "40px" } }}
+        >
+          <Typography
+            variant="subtitle1"
+            sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}
+          >
+            Quick Access
+          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Box component={RouterLink} to="/home" sx={styles.linkStyle}>
+              Home
+            </Box>
+            <Box component={RouterLink} to="/about" sx={styles.linkStyle}>
+              About
+            </Box>
+            
           </Box>
-          <Box component={RouterLink} to="/about" sx={styles.linkStyle}>
-            About
-          </Box>
-          <Box component={RouterLink} to="/menu-items" sx={styles.linkStyle}>
-            Menu
-          </Box>
-        </Box>
-      </Box>
+        </Grid>
 
-      {/* For You */}
-      <Box sx={{ flex: "1 1 150px" }}>
-        <Typography
-          variant="subtitle1"
-          sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}>
-          For You
-        </Typography>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <Box component={RouterLink} to="/NewArrival" sx={styles.linkStyle}>
-            New Arrival
+        {/* For You */}
+        <Grid
+          size={{ xs: 12, sm: 6, lg: 3 }}
+          sx={{ paddingTop: { lg: "40px" } }}
+        >
+          <Typography
+            variant="subtitle1"
+            sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}
+          >
+            For You
+          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+       
+           
+           <Box component={RouterLink} to="/menu-items" sx={styles.linkStyle}>
+              Menu
+            </Box>
+           <Box component={RouterLink} to="/search" sx={styles.linkStyle}>
+            search
+            </Box>
+            {/* <Box sx={styles.linkStyle}>50% Off</Box> */}
           </Box>
-          <Box component={RouterLink} to="/BestSelling" sx={styles.linkStyle}>
-            Best Selling
-          </Box>
-          <Box component={RouterLink} to="/50%Off" sx={styles.linkStyle}>
-            50% Off
-          </Box>
-        </Box>
-      </Box>
+        </Grid>
 
-      {/* Contact Info */}
-      <Box sx={{ flex: "1 1 200px" }}>
-        <Typography
-          variant="subtitle1"
-          sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}>
-          Contact Us
-        </Typography>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <Typography variant="body1" sx={styles.linkStyle}>
-            +20 1123 523 055
+        {/* Contact Info */}
+        <Grid
+          size={{ xs: 12, sm: 6, lg: 3 }}
+          sx={{ paddingTop: { lg: "40px" } }}
+        >
+          <Typography
+            variant="subtitle1"
+            sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}
+          >
+            Contact Us
           </Typography>
-          <Typography variant="body1" sx={styles.linkStyle}>
-            SwirloCoffee@gmail.com
-          </Typography>
-          <Typography variant="body1" sx={styles.linkStyle}>
-            890 Street Smart Village, Egypt.
-          </Typography>
-        </Box>
-      </Box>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Typography variant="body1" sx={styles.linkStyle}>
+              +20 1123 523 055
+            </Typography>
+            <Typography variant="body1" sx={styles.linkStyle}>
+              SwirloCoffee@gmail.com
+            </Typography>
+            <Typography variant="body1" sx={styles.linkStyle}>
+              890 Street Smart Village, Egypt.
+            </Typography>
+          </Box>
+        </Grid>
+      </Grid>
     </Box>
   );
 }

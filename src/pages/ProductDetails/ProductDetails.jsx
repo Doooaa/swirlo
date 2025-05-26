@@ -32,7 +32,7 @@ export default function ProductDetails() {
   if (isLoading) return <LoadingSpinner />;
 
   if (isError) {
-    toast.error(`Error: ${error.message}`);
+    toast.error(`Error: ${error.response.data.message}`);
     return null;
   }
 
@@ -218,7 +218,6 @@ export default function ProductDetails() {
       <Review></Review>
       <Box sx={{ maxWidth: "1200px", mx: "auto", px: { xs: 2, md: 6 } }}>
         <RelatedProducts
-        
           categoryId={prd.categoryID}
           currentProductId={prd._id}
           // onProductClick={(prd) => {

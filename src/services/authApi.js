@@ -21,7 +21,6 @@ export const login = async (userData) => {
   return response.data;
 };
 
-
 // Logout
 export const logout = async () => {
   try {
@@ -38,10 +37,9 @@ export const getCurrentUser = async () => {
   return res.data;
 };
 
-
 // Post use google
 
-export const PostUserByGoogle = async () => {
-  const res = await api.post("/auth/login/google");
+export const PostUserByGoogle = async (token) => {
+  const res = await api.post("/auth/login/google", token);
   return res.data;
 };

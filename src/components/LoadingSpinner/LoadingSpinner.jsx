@@ -1,13 +1,13 @@
 import { Box, CircularProgress } from "@mui/material";
 
-export default function LoadingSpinner() {
+export default function LoadingSpinner({ height }) {
   return (
     <Box
       sx={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        minHeight: "100vh",
+        height: height ? height : "100vh",
         backgroundColor: "rgba(0,0,0,0.05)",
       }}
     >

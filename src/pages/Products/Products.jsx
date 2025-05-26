@@ -9,7 +9,10 @@ import { toast } from "react-toastify";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { useProductsContext } from "../../context/ProductsContext";
 import FilterationSideNav from "../../components/FilterationSideNav/FilterationSideNav";
-import { filterProducts, getProductByCategory } from "../../services/productsApi";
+import {
+  filterProducts,
+  getProductByCategory,
+} from "../../services/productsApi";
 import { useCart } from "../../context/CartContext";
 import { useParams } from "react-router-dom";
 export default function Products() {
@@ -18,12 +21,15 @@ export default function Products() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { addToCart } = useCart();
-  const { categoryName } = useParams();
+  let { categoryName } = useParams();
+
+  //  Handle Product Click To Show Product Details
   const handleProductClick = (id, category) => {
-    navigate(`/menu-items/${encodeURIComponent(category)}/${id}`);
+    const categoryPath = category || "all";
+    navigate(`/menu-items/${categoryPath}/${id}`);
   };
-  
-  const limit = 12;   
+
+  const limit = 8;
 
   // check user is logged ?
   const user = localStorage.getItem("user");
@@ -38,36 +44,32 @@ export default function Products() {
   };
 
   // Handle Favourites
-  const {
-    data: { favorites = [] } = {},
-    isFetched,
-    error: favError,
-  } = useQuery({
+  const { data: { favorites = [] } = {}, isFetched } = useQuery({
     queryKey: ["favorites"],
     queryFn: () => favoritesServices.fetchAllFavorites(),
+    enabled: !!user,
   });
 
   const [favArr, setFavArr] = useState([]);
 
   useEffect(() => {
-    if (isFetched) {
+    if (isFetched && user) {
       setFavArr([...favorites.map((item) => item._id)]);
     }
-  }, [isFetched, favorites]);
+  }, [isFetched]);
 
-  const { mutateAsync: removeFromFavorites, isPending: isRemoving } =
-    useMutation({
-      mutationFn: (id) => favoritesServices.removeFromFavorites(id),
-      onSuccess: (data) => {
-        setFavArr([...data.favorites]);
-        queryClient.invalidateQueries(["favorites"]);
-        toast.success("Item removed from favorites!");
-      },
-      onError: (error) => {
-        toast.error(`Failed to remove: ${error.message}`);
-      },
-    });
-  const { mutateAsync: addToFavorites, isPending: isAdding } = useMutation({
+  const { mutateAsync: removeFromFavorites } = useMutation({
+    mutationFn: (id) => favoritesServices.removeFromFavorites(id),
+    onSuccess: (data) => {
+      setFavArr([...data.favorites]);
+      queryClient.invalidateQueries(["favorites"]);
+      toast.success("Item removed from favorites!");
+    },
+    onError: (error) => {
+      toast.error(`Failed to remove: ${error.response.data.message}`);
+    },
+  });
+  const { mutateAsync: addToFavorites } = useMutation({
     mutationFn: (id) => favoritesServices.addToFavorites(id),
     onSuccess: (data) => {
       setFavArr([...data.favorites]);
@@ -75,7 +77,7 @@ export default function Products() {
       toast.success("Item Added To Your favorites!");
     },
     onError: (error) => {
-      toast.error(`Failed to add: ${error.message}`);
+      toast.error(`Failed to add: ${error.response.data.message}`);
     },
   });
 
@@ -98,35 +100,31 @@ export default function Products() {
     price: 200,
   });
 
-
   // only runs when route has a categoryName
- const {
-      data: {
-        data: categoryData = [],
-        totalPages: catTotalPages = 1,
-        currentPage: catCurrentPage = 1,
-      } = {},
-      isLoading: isCatLoading,
-      isError: isCatError,
-      error: catError,
-    } = useQuery({
-      queryKey: ["productsByCategory", categoryName, page, limit],
-      queryFn: () => getProductByCategory(categoryName, page, limit),
-      enabled: !!categoryName,
-      keepPreviousData: true,
-    });
-
-
+  const {
+    data: {
+      data: categoryData = [],
+      totalPages: catTotalPages = 1,
+      currentPage: catCurrentPage = 1,
+    } = {},
+    isLoading: isCatLoading,
+    isError: isCatError,
+    error: catError,
+  } = useQuery({
+    queryKey: ["productsByCategory", categoryName, page],
+    queryFn: () => getProductByCategory(categoryName, page, limit),
+    enabled: !!categoryName,
+    keepPreviousData: true,
+  });
 
   const {
     data: {
       data: filteredProducts = [],
       totalPages = 1,
-      currentPage: serverCurrentPage = 1,
+      currentPage: favCurrentPage = 1,
     } = {},
     isLoading: isFilterLoading,
     isError: isFilterError,
-    error: filterError,
   } = useQuery({
     queryKey: ["filterProducts", filters, page],
     queryFn: () => filterProducts(filters, page),
@@ -138,37 +136,24 @@ export default function Products() {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   }, []);
 
-  // Determine which products to display
-  // const displayProducts =
-  //   filters.title || filters.price !== 200
-  //     ? filteredProducts
-  //     : products?.data || [];
-  // const displayTotalPages =
-  //   filters.title || filters.price !== 200
-  //     ? totalPages
-  //     : products?.totalPages || 1;
-
-
   // if categoryName is in the URL, we ignore filters completely
- const displayProducts = categoryName
-    ? categoryData
-    : (filters.title || filters.price !== 200
-        ? filteredProducts
-        : products?.data || []);
+  const displayProducts =
+    filters.title || filters.price !== 200
+      ? filteredProducts
+      : categoryName
+      ? categoryData
+      : products?.data || [];
 
-  const displayTotalPages = categoryName
-    ? catTotalPages
-    : (filters.title || filters.price !== 200
-        ? totalPages
-        : products?.totalPages || 1);
+  const displayTotalPages =
+    filters.title || filters.price !== 200
+      ? totalPages
+      : categoryName
+      ? catTotalPages
+      : products?.totalPages || 1;
 
-
-
-        const loading =
-          isLoading || isFilterLoading || (categoryName && isCatLoading);
-        const errorState =
-          isError || isFilterError || (categoryName && isCatError);
-
+  const loading =
+    isLoading || isFilterLoading || (categoryName && isCatLoading);
+  const errorState = isError || isFilterError || (categoryName && isCatError);
 
   // if (isError || isFilterError) {
   //   toast.error(error.response?.data?.message || "Failed to fetch products");
@@ -181,8 +166,7 @@ export default function Products() {
     return (
       <Container fixed>
         <FilterationSideNav onFilterChange={handleFilterChange} />
-        {/* {isLoading || isFilterLoading ? ( */}
-        {loading?(
+        {loading ? (
           <LoadingSpinner />
         ) : (
           <Box
@@ -206,8 +190,8 @@ export default function Products() {
 
   return (
     <div>
-      <FilterationSideNav onFilterChange={handleFilterChange} />
-      {isLoading || isFilterLoading ? (
+      <FilterationSideNav  onFilterChange={handleFilterChange} />
+      {loading ? (
         <LoadingSpinner />
       ) : displayProducts.length === 0 ? (
         <Box
@@ -231,8 +215,11 @@ export default function Products() {
               display: "flex",
               flexDirection: "row",
               flexWrap: "wrap",
+              justifyContent: {
+                xs: "center", // center on small screens
+                 // default to left on medium and above
+              },
               gap: 4,
-              justifyContent: "center",
               marginY: 4,
             }}
           >
@@ -245,12 +232,22 @@ export default function Products() {
                 onProductClick={() =>
                   handleProductClick(prd._id, prd.categoryID?.name)
                 }
-                sx={{ width: "290px", aspectRatio: "2/3", height: "66%" }}
+                sx={{
+                  width: { xs: "90%", sm: "290px" },
+                  aspectRatio: {xs:"1.80/3",sm:"2/3"},
+                  height: "66%",
+                }}
               />
             ))}
           </Box>
           <PaginationComponent
-            currentPage={categoryName ? catCurrentPage : products.currentPage}
+            currentPage={
+              filters.title || filters.price !== 200
+                ? favCurrentPage
+                : categoryName
+                ? catCurrentPage
+                : products?.currentPage
+            }
             // currentPage={products.currentPage}
             handlePagination={handlePagination}
             totalPages={displayTotalPages}

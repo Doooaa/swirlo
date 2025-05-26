@@ -1,38 +1,45 @@
 import { createContext, useContext, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { login, logout, register, getCurrentUser , PostUserByGoogle} from "../services/authApi";
+import {  useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  login,
+  logout,
+  register,
+  PostUserByGoogle,
+} from "../services/authApi";
+import { toast } from "react-toastify";
 
 const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
   // State user to store login info (local state)
-  const [userState, setUserState] = useState(()=>{const storedUser = localStorage.getItem("user");
+  const [userState, setUserState] = useState(() => {
+    const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
   const queryClient = useQueryClient();
 
   // useQuery fetches current user data
-  const {
-    data: user,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["auth", "user"],
-    queryFn: getCurrentUser,
-    retry: false,
-  });
+  // const {
+  //   data: user,
+  //   isLoading,
+  //   isError,
+  // } = useQuery({
+  //   queryKey: ["auth", "user"],
+  //   queryFn: getCurrentUser,
+  //   retry: false,
+  // });
 
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
       queryClient.setQueryData(["auth", "user"], data.user);
       const userData = {
-        name:data.user.name,
-        email:data.user.email,
-        role:data.user.role,
-      }
-      localStorage.setItem("user",JSON.stringify(userData))
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
       console.log("Login successful, role:", userData);
     },
   });
@@ -52,41 +59,36 @@ export default function AuthProvider({ children }) {
     mutationFn: logout,
     onSuccess: () => {
       queryClient.removeQueries(["auth", "user"]);
-      localStorage.removeItem("user")
+      localStorage.removeItem("user");
       setUserState(null);
-      navigate("/");
     },
   });
 
-const handleLoginSuccess = async (decoded, token, navigate) => {
-  try {
-    setUserState({
-      name: decoded.name,
-      email: decoded.email,
-      picture: decoded.picture,
-      token,
-    });
-    await PostUserByGoogle({ token });
-    localStorage.setItem("user",  JSON.stringify(decoded));
-    navigate("/");
-  } catch (error) {
-    console.error("Error during login:", error);
-  }
-};
-
-
-  const handleLogout = (navigate) => {
-   
+  const handleLoginSuccess = async (decoded, token, navigate) => {
+    try {
+      setUserState({
+        name: decoded.name,
+        email: decoded.email,
+        picture: decoded.picture,
+        token,
+      });
+      await PostUserByGoogle({ token });
+      localStorage.setItem("user", JSON.stringify(decoded));
+      navigate("/");
+      toast.success("Logged In Successfully!");
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
   };
+
 
   const handelLoginError = () => {
     console.log("error in login with google api ");
   };
 
   const value = {
-    user: userState || user, 
-    isLoading,
-    isAuthenticated: !!user && !isError,
+    user: userState,
+    isAuthenticated: !!userState,
     login: loginMutation.mutateAsync,
     isLoggingIn: loginMutation.isLoading,
     register: registerMutation.mutateAsync,
@@ -94,9 +96,8 @@ const handleLoginSuccess = async (decoded, token, navigate) => {
     logout: logoutMutation.mutateAsync,
     isLoggingOut: logoutMutation.isLoading,
     error: loginMutation.error || registerMutation.error,
-    role: (userState || user)?.role,
+    role: userState?.role,
     handleLoginSuccess,
-    handleLogout,
     handelLoginError,
   };
 

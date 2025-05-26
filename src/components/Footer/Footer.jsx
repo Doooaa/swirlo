@@ -73,8 +73,8 @@ export default function Footer() {
           <Box component={RouterLink} to="/about" sx={styles.linkStyle}>
             About
           </Box>
-          <Box component={RouterLink} to="/categories" sx={styles.linkStyle}>
-            Categories
+          <Box component={RouterLink} to="/menu-items" sx={styles.linkStyle}>
+            Menu
           </Box>
         </Box>
       </Box>

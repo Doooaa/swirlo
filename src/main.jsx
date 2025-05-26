@@ -45,7 +45,6 @@ import { ToastContainer } from "react-toastify";
 import Search from "./pages/Search/Search.jsx";
 import ProductsContextProvider from "./context/ProductsContext.jsx";
 import FavoritesContextProvider from "./context/FavoritesContext.jsx";
-import CategoryProducts from "./pages/CategoryProducts/CategoryProducts.jsx";
 import ArrowUp from "../src/components/ArrowUp/ArrowUp.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
 import { OrdersContextProvider } from "./context/OrdersContext.jsx";
@@ -89,7 +88,18 @@ const router = createBrowserRouter([
             <Products />
           </Suspense>
         ),
+        children: [
+          {
+            path: ":categoryName",
+            element: (
+              <Suspense fallback={<LoadingSpinner />}>
+                <Products />
+              </Suspense>
+            ),
+          },
+        ],
       },
+
       { path: "login", element: <Login></Login> },
       { path: "register", element: <Register></Register> },
       { path: "favorites", element: <Favorites></Favorites> },
@@ -100,8 +110,11 @@ const router = createBrowserRouter([
         path: "order-confirmation/:id",
         element: <OrderConfirmation></OrderConfirmation>,
       },
-      { path: "menu-items/:id", element: <ProductDetails></ProductDetails> },
-      { path: "menu-items/:category", element: <CategoryProducts /> },
+      {
+        path: "menu-items/:categoryName/:id",
+        element: <ProductDetails></ProductDetails>,
+      },
+   
 
       // ^ dashboard
       {

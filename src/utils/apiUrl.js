@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:7500", // access api url from .env file
+  baseURL: import.meta.env.VITE_API_URL, // access api url from .env file
   withCredentials: true, // important for http only cookie auth
 });
 

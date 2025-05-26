@@ -26,7 +26,7 @@ export default function ArrowUp() {
   }, []);
 
   // Bigger circle settings
-  const radius = 40;
+  const radius = 38;
   const stroke = 6;
   const normalizedRadius = radius - stroke * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
@@ -40,7 +40,7 @@ export default function ArrowUp() {
           onClick={goUp}
           style={{
             position: "fixed",
-            bottom: "20px",
+            bottom: "90px",
             right: "20px",
             height: "80px", // larger button
             width: "80px",  // larger button
@@ -53,7 +53,7 @@ export default function ArrowUp() {
             justifyContent: "center",
             alignItems: "center",
             zIndex: 9999,
-            // boxShadow: "0 2px 12px rgba(0, 0, 0, 0.25)", // optional
+            // boxShadow: "0 2px 2px rgba(0, 0, 0, 0.25)", // optional
           }}
         >
           <svg height="80" width="80">

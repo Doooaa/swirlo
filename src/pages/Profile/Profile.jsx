@@ -315,16 +315,16 @@ const Profile = () => {
                       mb: 2,
                       "& .MuiOutlinedInput-root": {
                         "& fieldset": {
-                          borderColor: "var(--primary)",
+                          borderColor: "var(--green-color)",
                         },
                         "&.Mui-focused fieldset": {
-                          borderColor: "var(--light-color)",
+                          borderColor: "var(--green-color)",
                         },
                       },
                       "& .MuiInputLabel-root": {
-                        color: "var(--light-color)",
+                        color: "var(--green-color)",
                         "&.Mui-focused": {
-                          color: "var(--primary)",
+                          color: "var(--green-color)",
                         },
                       },
                     }}
@@ -364,20 +364,19 @@ const Profile = () => {
                     fullWidth
                     size={isMobile ? "small" : "medium"}
                     sx={{
-                      textTransform: "capitalize",
                       mb: 2,
                       "& .MuiOutlinedInput-root": {
                         "& fieldset": {
-                          borderColor: "var(--primary)",
+                          borderColor: "var(--green-color)",
                         },
                         "&.Mui-focused fieldset": {
-                          borderColor: "var(--light-color)",
+                          borderColor: "var(--green-color)",
                         },
                       },
                       "& .MuiInputLabel-root": {
-                        color: "var(--light-color)",
+                        color: "var(--green-color)",
                         "&.Mui-focused": {
-                          color: "var(--primary)",
+                          color: "var(--green-color)",
                         },
                       },
                     }}
@@ -406,7 +405,7 @@ const Profile = () => {
                     onClick={handleCancelEdit}
                     size={isMobile ? "small" : "medium"}
                     sx={{
-                      color: "var(--light-color)",
+                      color: "var(--green-color)",
                       "&:hover": {
                         backgroundColor: "var(--main-background)",
                       },
@@ -515,7 +514,7 @@ const Profile = () => {
                 <ListItem
                   secondaryAction={
                     <Chip
-                      label={`$${order.totalPrice.toFixed(2)}`}
+                      label={`${order.totalPrice.toFixed(2)} EGP`}
                       size="small"
                       sx={{ color: "var(--light-color)" }}
                     />
@@ -537,7 +536,7 @@ const Profile = () => {
                     )}
                   </ListItemIcon>
                   <ListItemText
-                    primary={order._id}
+                    primary={order._id.slice(19, 24)}
                     secondary={formatDate(order.createdAt)}
                     primaryTypographyProps={{ variant: "body2" }}
                     secondaryTypographyProps={{ variant: "caption" }}
@@ -552,7 +551,7 @@ const Profile = () => {
                     {order.orderItems.map((item, index) => (
                       <ListItem key={index} sx={{ pl: 4 }}>
                         <ListItemText
-                          primary={item.title}
+                          primary={item.product.title}
                           primaryTypographyProps={{ variant: "body2" }}
                         />
                       </ListItem>
@@ -562,16 +561,29 @@ const Profile = () => {
                         label={order.shippingStatus}
                         size="small"
                         sx={{
+                          width: !isMobile ? "100%" : "content-fit",
+                          px: !isMobile ? 0 : 3,
                           backgroundColor:
                             order.shippingStatus === "shipped"
-                              ? "success.light"
-                              : "error.light",
-                          color:
-                            order.shippingStatus === "shipped"
-                              ? "success.dark"
-                              : "error.dark",
+                              ? green[500]
+                              : order.shippingStatus === "prepared"
+                              ? deepOrange[400]
+                              : red[600],
+                          color: "white",
                         }}
                       />
+                    </ListItem>
+                    <ListItem sx={{ pl: 4 }}>
+                      <Typography
+                        component={Link}
+                        to={`/order-confirmation/${order._id}`}
+                        sx={{
+                          textDecoration: "none",
+                          color: "var(--green-color)",
+                        }}
+                      >
+                        Show Details
+                      </Typography>
                     </ListItem>
                   </List>
                 </Collapse>
@@ -646,7 +658,7 @@ const Profile = () => {
                           sx={{ textDecoration: "none" }}
                         >
                           <RemoveRedEyeOutlined
-                            sx={{ color: "var(--light-color)" }}
+                            sx={{ color: "var(--green-color)" }}
                           ></RemoveRedEyeOutlined>
                         </Typography>
                       </TableCell>
@@ -728,7 +740,7 @@ const Profile = () => {
                         width: isMobile ? 80 : 120,
                         height: isMobile ? 80 : 120,
                         mb: 2,
-                        border: `3px solid var(--light-color)`,
+                        border: `3px solid var(--green-color)`,
                       }}
                     />
                   </Badge>
@@ -754,16 +766,16 @@ const Profile = () => {
                         mb: 2,
                         "& .MuiOutlinedInput-root": {
                           "& fieldset": {
-                            borderColor: "var(--primary)",
+                            borderColor: "var(--green-color)",
                           },
                           "&.Mui-focused fieldset": {
-                            borderColor: "var(--light-color)",
+                            borderColor: "var(--green-color)",
                           },
                         },
                         "& .MuiInputLabel-root": {
-                          color: "var(--light-color)",
+                          color: "var(--green-color)",
                           "&.Mui-focused": {
-                            color: "var(--primary)",
+                            color: "var(--green-color)",
                           },
                         },
                       }}
@@ -819,12 +831,12 @@ const Profile = () => {
                     sx={{
                       width: "100%",
                       "& .MuiTabs-indicator": {
-                        backgroundColor: "var(--primary)", // Change the indicator color
+                        backgroundColor: "var(--green-color)", // Change the indicator color
                       },
                     }}
                   >
                     <Tab
-                      icon={<PersonIcon sx={{ color: "var(--light-color)" }} />}
+                      icon={<PersonIcon sx={{ color: "var(--green-color)" }} />}
                       label="Profile"
                       sx={{
                         width: "50%",
@@ -837,7 +849,7 @@ const Profile = () => {
                     />
                     <Tab
                       icon={
-                        <HistoryIcon sx={{ color: "var(--light-color)" }} />
+                        <HistoryIcon sx={{ color: "var(--green-color)" }} />
                       }
                       label="Orders"
                       sx={{
@@ -906,16 +918,16 @@ const Profile = () => {
                   mb: 2,
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
-                      borderColor: "var(--primary)",
+                      borderColor: "var(--green-color)",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "var(--light-color)",
+                      borderColor: "var(--green-color)",
                     },
                   },
                   "& .MuiInputLabel-root": {
-                    color: "var(--light-color)",
+                    color: "var(--green-color)",
                     "&.Mui-focused": {
-                      color: "var(--primary)",
+                      color: "var(--green-color)",
                     },
                   },
                 }}
@@ -958,16 +970,16 @@ const Profile = () => {
                   mb: 2,
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
-                      borderColor: "var(--primary)",
+                      borderColor: "var(--green-color)",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "var(--light-color)",
+                      borderColor: "var(--green-color)",
                     },
                   },
                   "& .MuiInputLabel-root": {
-                    color: "var(--light-color)",
+                    color: "var(--green-color)",
                     "&.Mui-focused": {
-                      color: "var(--primary)",
+                      color: "var(--green-color)",
                     },
                   },
                 }}
@@ -1013,18 +1025,19 @@ const Profile = () => {
                   ),
                 }}
                 sx={{
+                  mb: 2,
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
-                      borderColor: "var(--primary)",
+                      borderColor: "var(--green-color)",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "var(--light-color)",
+                      borderColor: "var(--green-color)",
                     },
                   },
                   "& .MuiInputLabel-root": {
-                    color: "var(--light-color)",
+                    color: "var(--green-color)",
                     "&.Mui-focused": {
-                      color: "var(--primary)",
+                      color: "var(--green-color)",
                     },
                   },
                 }}
@@ -1035,7 +1048,7 @@ const Profile = () => {
                 onClick={handlePasswordDialogClose}
                 size={isMobile ? "small" : "medium"}
                 sx={{
-                  color: "var(--light-color)",
+                  color: "var(--green-color)",
                   "&:hover": {
                     backgroundColor: "var(--main-background)",
                   },

@@ -28,7 +28,6 @@ import ProductDetails from "./pages/ProductDetails/ProductDetails.jsx";
 import AuthContextProvider from "./context/AuthContext.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import CategoriesContextProvider from "./context/CategoriesContext.jsx";
-import { Toaster } from "react-hot-toast";
 import Favorites from "./pages/Favorites/Favorites.jsx";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -103,40 +102,9 @@ const router = createBrowserRouter([
         path: "order-confirmation/:id",
         element: <OrderConfirmation></OrderConfirmation>,
       },
-<<<<<<< HEAD
       { path: "menu-items", element: <Products></Products> },
       { path: "menu-items/:id", element: <ProductDetails></ProductDetails> },
       { path: "menu-items/:category", element: <CategoryProducts /> },
-=======
-      {
-        path: "menu-items/:categoryName/:id",
-        element: <ProductDetails></ProductDetails>,
-      },
-   
-
-      // ^ dashboard
-      {
-        path: "dashboard",
-        element: <Dashboard></Dashboard>,
-        children: [
-          {
-            index: true,
-            element: <DashboardHome></DashboardHome>,
-          },
-          {
-            path: "categories",
-            element: <DashboardCategories></DashboardCategories>,
-          },
-          {
-            path: "menu-items",
-            element: <DashboardProducts></DashboardProducts>,
-          },
-          { path: "coupons", element: <DashboardCoupons></DashboardCoupons> },
-          { path: "orders", element: <DashboardOrders></DashboardOrders> },
-          { path: "admins", element: <DashboardAdmins></DashboardAdmins> },
-        ],
-      },
->>>>>>> bff5c8820364a90b31c4147265627c281bc16712
       { path: "*", element: <NotFound></NotFound> },
     ],
   },
@@ -145,6 +113,7 @@ const router = createBrowserRouter([
 // ^ react query setup
 const queryClient = new QueryClient();
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+import CategoryProducts from "./pages/CategoryProducts/CategoryProducts";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
@@ -154,16 +123,15 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
           <CartContextProvider>
-
             <FavoritesContextProvider>
               <CategoriesContextProvider>
                 <ProductsContextProvider>
                   <OrdersContextProvider>
                     <ToastContainer />
-                      <ArrowUp />
-                  {/* <Toaster position="top-right" reverseOrder={false} /> */}
-                      <RouterProvider router={router} />
-                   </OrdersContextProvider>
+                    <ArrowUp />
+                    {/* <Toaster position="top-right" reverseOrder={false} /> */}
+                    <RouterProvider router={router} />
+                  </OrdersContextProvider>
                 </ProductsContextProvider>
               </CategoriesContextProvider>
             </FavoritesContextProvider>

@@ -23,14 +23,8 @@ function Search() {
 
   // Filter query with automatic refetch on dependencies change
   const {
-    data: {
-      data: products = [],
-      totalPages = 1,
-      currentPage: serverCurrentPage = 1,
-    } = {},
+    data: { data: products = [], totalPages = 1 } = {},
     isLoading,
-    isRefetching,
-    isError,
     error,
   } = useQuery({
     queryKey: ["filterProducts", filters, currentPage],
@@ -78,7 +72,7 @@ function Search() {
       toast.success("Item added to favorites!");
     },
     onError: (error) => {
-      toast.error(`Failed to add: ${error.message}`);
+      toast.error(`Failed to add: ${error.response.data.message}`);
     },
   });
 
@@ -91,7 +85,7 @@ function Search() {
       toast.success("Item removed from favorites!");
     },
     onError: (error) => {
-      toast.error(`Failed to remove: ${error.message}`);
+      toast.error(`Failed to remove: ${error.response.data.message}`);
     },
   });
 

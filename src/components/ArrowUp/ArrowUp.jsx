@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 export default function ArrowUp() {
   const [visible, setVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   function toggleVisibilityAndProgress() {
-    const scrollTop =
-      window.pageYOffset || document.documentElement.scrollTop;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollHeight =
-      document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      document.documentElement.scrollHeight -
+      document.documentElement.clientHeight;
 
     const scrolled = (scrollTop / scrollHeight) * 100;
     setScrollProgress(scrolled);
@@ -22,15 +22,17 @@ export default function ArrowUp() {
   }
   useEffect(() => {
     window.addEventListener("scroll", toggleVisibilityAndProgress);
-    return () => window.removeEventListener("scroll", toggleVisibilityAndProgress);
+    return () =>
+      window.removeEventListener("scroll", toggleVisibilityAndProgress);
   }, []);
 
   // Constants for SVG circle
-  const radius = 48;  // Increased radius for a larger button
-  const stroke = 8;   // Increased stroke width for a bolder border
+  const radius = 48; // Increased radius for a larger button
+  const stroke = 8; // Increased stroke width for a bolder border
   const normalizedRadius = radius - stroke * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (scrollProgress / 100) * circumference;
+  const strokeDashoffset =
+    circumference - (scrollProgress / 100) * circumference;
 
   return (
     <div>
@@ -42,7 +44,7 @@ export default function ArrowUp() {
             bottom: "40px",
             right: "30px",
             height: "96px", // Increased size of button
-            width: "96px",  // Increased size of button
+            width: "96px", // Increased size of button
             borderRadius: "50%",
             background: "none",
             border: "none",
@@ -60,8 +62,8 @@ export default function ArrowUp() {
               fill="white"
               strokeWidth={stroke}
               r={normalizedRadius}
-              cx="48"  // Adjusted for new size
-              cy="48"  // Adjusted for new size
+              cx="48" // Adjusted for new size
+              cy="48" // Adjusted for new size
             />
             <circle
               stroke="var(--primary)" // Use the primary color for the progress circle
@@ -75,8 +77,8 @@ export default function ArrowUp() {
                 transformOrigin: "50% 50%",
               }}
               r={normalizedRadius}
-              cx="48"  // Adjusted for new size
-              cy="48"  // Adjusted for new size
+              cx="48" // Adjusted for new size
+              cy="48" // Adjusted for new size
             />
           </svg>
           {/* Positioning the ArrowUpwardIcon inside the button */}

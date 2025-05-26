@@ -5,6 +5,8 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import { Link as RouterLink } from "react-router-dom";
 
+import logo from "../../assets/logo2.png";
+
 export default function Footer() {
   return (
     <Box
@@ -23,7 +25,8 @@ export default function Footer() {
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right bottom",
         backgroundBlendMode: "soft-light",
-      }}>
+      }}
+    >
       {/* Logo & Description */}
       <Box
         sx={{
@@ -31,7 +34,8 @@ export default function Footer() {
           display: "flex",
           flexDirection: "column",
           gap: 3,
-        }}>
+        }}
+      >
         <Box
           component={RouterLink}
           to="/"
@@ -39,10 +43,11 @@ export default function Footer() {
             display: "flex",
             alignItems: "center",
             textDecoration: "none",
-          }}>
+          }}
+        >
           <Box
             component="img"
-            src="src/assets/logo2.png"
+            src={logo}
             alt="Logo"
             sx={{ height: 85, width: "auto" }}
           />
@@ -63,7 +68,8 @@ export default function Footer() {
       <Box sx={{ flex: "1 1 150px" }}>
         <Typography
           variant="subtitle1"
-          sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}>
+          sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}
+        >
           Quick Access
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -83,7 +89,8 @@ export default function Footer() {
       <Box sx={{ flex: "1 1 150px" }}>
         <Typography
           variant="subtitle1"
-          sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}>
+          sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}
+        >
           For You
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -103,7 +110,8 @@ export default function Footer() {
       <Box sx={{ flex: "1 1 200px" }}>
         <Typography
           variant="subtitle1"
-          sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}>
+          sx={{ fontWeight: "bold", mb: 1, fontSize: "20px" }}
+        >
           Contact Us
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>

@@ -21,7 +21,6 @@ export const login = async (userData) => {
   return response.data;
 };
 
-
 // Logout
 export const logout = async () => {
   try {

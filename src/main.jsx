@@ -25,17 +25,9 @@ import Checkout from "./pages/Checkout/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation/OrderConfirmation";
 import Products from "./pages/Products/Products";
 import ProductDetails from "./pages/ProductDetails/ProductDetails.jsx";
-import DashboardHome from "./pages/DashboardHome/DashboardHome";
-import DashboardCategories from "./pages/DashboardCategories/DashboardCategories";
-import DashboardOrders from "./pages/DashboardOrders/DashboardOrders";
-import DashboardProducts from "./pages/DashboardProducts/DashboardProducts";
-import DashboardCoupons from "./pages/DashboardCoupons/DashboardCoupons";
-import DashboardAdmins from "./pages/DashboardAdmins/DashboardAdmins";
-import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import AuthContextProvider from "./context/AuthContext.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import CategoriesContextProvider from "./context/CategoriesContext.jsx";
-import { Toaster } from "react-hot-toast";
 import Favorites from "./pages/Favorites/Favorites.jsx";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -48,6 +40,10 @@ import FavoritesContextProvider from "./context/FavoritesContext.jsx";
 import ArrowUp from "../src/components/ArrowUp/ArrowUp.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
 import { OrdersContextProvider } from "./context/OrdersContext.jsx";
+import CategoryProducts from "./pages/CategoryProducts/CategoryProducts";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
+import PrivateProtectedRoute from "./components/ProtectedRoute/PrivateProtectedRoute.jsx";
+
 // ^ routing setup
 const router = createBrowserRouter([
   {
@@ -100,44 +96,44 @@ const router = createBrowserRouter([
         ],
       },
 
-      { path: "login", element: <Login></Login> },
-      { path: "register", element: <Register></Register> },
+      {
+        path: "login",
+        element: (
+          <ProtectedRoute>
+            <Login></Login>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "register",
+        element: (
+          <ProtectedRoute>
+            <Register></Register>
+          </ProtectedRoute>
+        ),
+      },
       { path: "favorites", element: <Favorites></Favorites> },
       { path: "search", element: <Search></Search> },
       { path: "cart", element: <Cart></Cart> },
-      { path: "checkout", element: <Checkout></Checkout> },
+      {
+        path: "checkout",
+        element: (
+          <PrivateProtectedRoute>
+            <Checkout></Checkout>
+          </PrivateProtectedRoute>
+        ),
+      },
       {
         path: "order-confirmation/:id",
-        element: <OrderConfirmation></OrderConfirmation>,
+        element: (
+          <PrivateProtectedRoute>
+            <OrderConfirmation></OrderConfirmation>
+          </PrivateProtectedRoute>
+        ),
       },
-      {
-        path: "menu-items/:categoryName/:id",
-        element: <ProductDetails></ProductDetails>,
-      },
-   
-
-      // ^ dashboard
-      {
-        path: "dashboard",
-        element: <Dashboard></Dashboard>,
-        children: [
-          {
-            index: true,
-            element: <DashboardHome></DashboardHome>,
-          },
-          {
-            path: "categories",
-            element: <DashboardCategories></DashboardCategories>,
-          },
-          {
-            path: "menu-items",
-            element: <DashboardProducts></DashboardProducts>,
-          },
-          { path: "coupons", element: <DashboardCoupons></DashboardCoupons> },
-          { path: "orders", element: <DashboardOrders></DashboardOrders> },
-          { path: "admins", element: <DashboardAdmins></DashboardAdmins> },
-        ],
-      },
+      { path: "menu-items", element: <Products></Products> },
+      { path: "menu-items/:id", element: <ProductDetails></ProductDetails> },
+      { path: "menu-items/:category", element: <CategoryProducts /> },
       { path: "*", element: <NotFound></NotFound> },
     ],
   },
@@ -155,16 +151,15 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
           <CartContextProvider>
-
             <FavoritesContextProvider>
               <CategoriesContextProvider>
                 <ProductsContextProvider>
                   <OrdersContextProvider>
                     <ToastContainer />
-                      <ArrowUp />
-                  {/* <Toaster position="top-right" reverseOrder={false} /> */}
-                      <RouterProvider router={router} />
-                   </OrdersContextProvider>
+                    <ArrowUp />
+                    {/* <Toaster position="top-right" reverseOrder={false} /> */}
+                    <RouterProvider router={router} />
+                  </OrdersContextProvider>
                 </ProductsContextProvider>
               </CategoriesContextProvider>
             </FavoritesContextProvider>

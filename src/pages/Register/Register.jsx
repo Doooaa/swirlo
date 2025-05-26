@@ -21,19 +21,19 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 export default function Register() {
   const navigate = useNavigate();
-  const {register, isRegistering, error:registerError} = useAuth()
+  const { register, isRegistering, error: registerError } = useAuth();
 
-    // Show Password
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfPassword, setShowConfPassword] = useState(false);
-    const togglePasswordVisibility = () => {
-      setShowPassword((prev) => !prev);
-    };
-  
-    const toggleConfPasswordVisibility = () => {
-      setShowConfPassword((prev) => !prev);
-    };
-  
+  // Show Password
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfPassword, setShowConfPassword] = useState(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const toggleConfPasswordVisibility = () => {
+    setShowConfPassword((prev) => !prev);
+  };
+
   // Validation Schema
   const regSchema = Yup.object().shape({
     userName: Yup.string()
@@ -53,29 +53,42 @@ export default function Register() {
       .required("Confirm Password is Required"),
   });
   // Submit
-  const onSubmit = async(values) => {
+  const onSubmit = async (values) => {
     console.log("submitted", values);
 
-    try{
-      await register({name:values.userName, email:values.email,password:values.password, role:"user"})
-      navigate('/login')
-    }catch(error) {
+    try {
+      await register({
+        name: values.userName,
+        email: values.email,
+        password: values.password,
+        role: "user",
+      });
+      navigate("/login");
+    } catch (error) {
       console.error("Full error object:", error);
       if (error.response) {
         console.error("Response data:", error.response.data);
       }
-  };}
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        userName: "",
-        email: "",
-        password: "",
-        confirmPass: "",
-      },
-      validationSchema: regSchema,
-      onSubmit,
-    });
+    }
+  };
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    isSubmitting,
+  } = useFormik({
+    initialValues: {
+      userName: "",
+      email: "",
+      password: "",
+      confirmPass: "",
+    },
+    validationSchema: regSchema,
+    onSubmit,
+  });
 
   return (
     <Box
@@ -315,7 +328,14 @@ export default function Register() {
               },
             }}
           >
-            Sign Up
+            {isSubmitting ? (
+              <CircularProgress
+                size={24}
+                sx={{ color: "var(--main-background)" }}
+              />
+            ) : (
+              "Sign Up"
+            )}
           </Button>
         </Stack>
       </Box>

@@ -71,14 +71,12 @@ export default function RelatedProducts({
   return (
     <Box
       mt={6}
-      sx={{ maxWidth: "1200px", mx: "auto", px: 2, textAlign: "center" }}
-    >
+      sx={{ maxWidth: "1200px", mx: "auto", px: 2, textAlign: "center" }}>
       <Typography
         variant="h5"
         color="var(--primary)"
         gutterBottom
-        sx={{ fontWeight: "700", mb: 6, fontSize: "2.5rem" }}
-      >
+        sx={{ fontWeight: "700", mb: 6, fontSize: "2.5rem" }}>
         Related Products
       </Typography>
 
@@ -92,8 +90,7 @@ export default function RelatedProducts({
           padding: "0 20px 20px",
           display: "flex",
           alignItems: "center",
-        }}
-      >
+        }}>
         {relatedProducts.map((product) => (
           <SwiperSlide key={product._id}>
             <Box
@@ -103,8 +100,7 @@ export default function RelatedProducts({
                 width: "100%",
                 height: "100%",
                 placeItems: "center",
-              }}
-            >
+              }}>
               <ProductCard
                 product={product}
                 onAddToCart={() => handleAddToCart(product._id)}

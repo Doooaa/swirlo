@@ -37,6 +37,7 @@ const Navbar = () => {
 
   const { favorites } = useFavoritesContext();
   const { data } = useCart();
+  const totalCartItems = data?.totalItems;
 
   const navigate = useNavigate();
 
@@ -225,9 +226,9 @@ const Navbar = () => {
                   },
                 }}>
                 <Badge
-                  badgeContent={data.data?.length || 0}
+                  badgeContent={totalCartItems}
                   color="error"
-                  invisible={data.data?.length === 0}
+                  invisible={totalCartItems === 0}
                   overlap="circular"
                   sx={{
                     "& .MuiBadge-badge": {

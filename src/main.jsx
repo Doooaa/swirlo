@@ -40,6 +40,10 @@ import FavoritesContextProvider from "./context/FavoritesContext.jsx";
 import ArrowUp from "../src/components/ArrowUp/ArrowUp.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
 import { OrdersContextProvider } from "./context/OrdersContext.jsx";
+import CategoryProducts from "./pages/CategoryProducts/CategoryProducts";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
+import PrivateProtectedRoute from "./components/ProtectedRoute/PrivateProtectedRoute.jsx";
+
 // ^ routing setup
 const router = createBrowserRouter([
   {
@@ -92,15 +96,40 @@ const router = createBrowserRouter([
         ],
       },
 
-      { path: "login", element: <Login></Login> },
-      { path: "register", element: <Register></Register> },
+      {
+        path: "login",
+        element: (
+          <ProtectedRoute>
+            <Login></Login>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "register",
+        element: (
+          <ProtectedRoute>
+            <Register></Register>
+          </ProtectedRoute>
+        ),
+      },
       { path: "favorites", element: <Favorites></Favorites> },
       { path: "search", element: <Search></Search> },
       { path: "cart", element: <Cart></Cart> },
-      { path: "checkout", element: <Checkout></Checkout> },
+      {
+        path: "checkout",
+        element: (
+          <PrivateProtectedRoute>
+            <Checkout></Checkout>
+          </PrivateProtectedRoute>
+        ),
+      },
       {
         path: "order-confirmation/:id",
-        element: <OrderConfirmation></OrderConfirmation>,
+        element: (
+          <PrivateProtectedRoute>
+            <OrderConfirmation></OrderConfirmation>
+          </PrivateProtectedRoute>
+        ),
       },
       { path: "menu-items", element: <Products></Products> },
       { path: "menu-items/:id", element: <ProductDetails></ProductDetails> },
@@ -113,7 +142,6 @@ const router = createBrowserRouter([
 // ^ react query setup
 const queryClient = new QueryClient();
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-import CategoryProducts from "./pages/CategoryProducts/CategoryProducts";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>

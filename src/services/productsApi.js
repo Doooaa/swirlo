@@ -35,13 +35,22 @@ export const getProductByID = async (id) => {
   return response.data;
 };
 
+
 export const getProductByCategory = async (
-  categoryName,
-  page = 1,
-  limit = 12
-) => {
-  const response = await api.get(
-    `/products/category/${categoryName}?page=${page}&limit=${limit}`
-  );
-  return response.data;
-};
+    categoryName,
+    page ,
+    limit 
+  ) => {
+  
+    const path = `/products/category/${encodeURIComponent(categoryName)}`;  
+    try {
+      const response = await api.get(path, {
+        params: { page, limit },
+      });
+      console.log("→ Got response:", response.status, response.data);
+     return response.data;
+    } catch (err) {
+      console.error("getProductByCategory failed:", err);
+      throw err; 
+    }
+  };

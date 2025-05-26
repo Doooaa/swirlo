@@ -9,32 +9,33 @@ import { toast } from "react-toastify";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { useProductsContext } from "../../context/ProductsContext";
 import FilterationSideNav from "../../components/FilterationSideNav/FilterationSideNav";
-import { filterProducts } from "../../services/productsApi";
-
+import { filterProducts, getProductByCategory } from "../../services/productsApi";
+import { useCart } from "../../context/CartContext";
+import { useParams } from "react-router-dom";
 export default function Products() {
   const { products, isLoading, isError, error, page, setPage } =
     useProductsContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  const handleProductClick = (id) => {
-    navigate(`/menu-items/${id}`);
+  const { addToCart } = useCart();
+  const { categoryName } = useParams();
+  const handleProductClick = (id, category) => {
+    navigate(`/menu-items/${encodeURIComponent(category)}/${id}`);
   };
+  
+  const limit = 12;   
 
-  // * get products
-  // const [page, setPage] = useState(1);
-  // const limit = 12;
-
-  // const {
-  //   data: {
-  //     data: { data: products = [], totalPages = 1, currentPage = 1 } = {},
-  //   } = {},
-  //   isLoading,
-  //   error: productErr,
-  // } = useQuery({
-  //   queryKey: ["products", page],
-  //   queryFn: () => fetchProducts(page, limit),
-  // });
+  // check user is logged ?
+  const user = localStorage.getItem("user");
+  // add to cart
+  const handleAddToCart = (id) => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+    toast.success("item added to cart successfully");
+    addToCart(id);
+  };
 
   // Handle Favourites
   const {
@@ -97,6 +98,26 @@ export default function Products() {
     price: 200,
   });
 
+
+  // only runs when route has a categoryName
+ const {
+      data: {
+        data: categoryData = [],
+        totalPages: catTotalPages = 1,
+        currentPage: catCurrentPage = 1,
+      } = {},
+      isLoading: isCatLoading,
+      isError: isCatError,
+      error: catError,
+    } = useQuery({
+      queryKey: ["productsByCategory", categoryName, page, limit],
+      queryFn: () => getProductByCategory(categoryName, page, limit),
+      enabled: !!categoryName,
+      keepPreviousData: true,
+    });
+
+
+
   const {
     data: {
       data: filteredProducts = [],
@@ -118,21 +139,50 @@ export default function Products() {
   }, []);
 
   // Determine which products to display
-  const displayProducts =
-    filters.title || filters.price !== 200
-      ? filteredProducts
-      : products?.data || [];
-  const displayTotalPages =
-    filters.title || filters.price !== 200
-      ? totalPages
-      : products?.totalPages || 1;
+  // const displayProducts =
+  //   filters.title || filters.price !== 200
+  //     ? filteredProducts
+  //     : products?.data || [];
+  // const displayTotalPages =
+  //   filters.title || filters.price !== 200
+  //     ? totalPages
+  //     : products?.totalPages || 1;
 
-  if (isError || isFilterError) {
-    toast.error(error.response?.data?.message || "Failed to fetch products");
+
+  // if categoryName is in the URL, we ignore filters completely
+ const displayProducts = categoryName
+    ? categoryData
+    : (filters.title || filters.price !== 200
+        ? filteredProducts
+        : products?.data || []);
+
+  const displayTotalPages = categoryName
+    ? catTotalPages
+    : (filters.title || filters.price !== 200
+        ? totalPages
+        : products?.totalPages || 1);
+
+
+
+        const loading =
+          isLoading || isFilterLoading || (categoryName && isCatLoading);
+        const errorState =
+          isError || isFilterError || (categoryName && isCatError);
+
+
+  // if (isError || isFilterError) {
+  //   toast.error(error.response?.data?.message || "Failed to fetch products");
+  if (errorState) {
+    toast.error(
+      error?.response?.data?.message ||
+        catError?.message ||
+        "Failed to fetch products"
+    );
     return (
       <Container fixed>
         <FilterationSideNav onFilterChange={handleFilterChange} />
-        {isLoading || isFilterLoading ? (
+        {/* {isLoading || isFilterLoading ? ( */}
+        {loading?(
           <LoadingSpinner />
         ) : (
           <Box
@@ -189,23 +239,19 @@ export default function Products() {
             {displayProducts?.map((prd) => (
               <ProductCard
                 key={prd._id}
-                product={{
-                  thumbnail: prd.thumbnail,
-                  title: prd.title,
-                  avgRating: prd.avgRating,
-                  price: prd.price,
-                  label: prd.label || "no label",
-                  _id: prd._id,
-                }}
-                onAddToCart={(id) => console.log("Add to cart:", id)}
+                product={prd}
+                onAddToCart={() => handleAddToCart(prd._id)}
                 onToggleFavorite={(id) => toggleWishlist(id)}
-                onProductClick={handleProductClick}
+                onProductClick={() =>
+                  handleProductClick(prd._id, prd.categoryID?.name)
+                }
                 sx={{ width: "290px", aspectRatio: "2/3", height: "66%" }}
               />
             ))}
           </Box>
           <PaginationComponent
-            currentPage={products.currentPage}
+            currentPage={categoryName ? catCurrentPage : products.currentPage}
+            // currentPage={products.currentPage}
             handlePagination={handlePagination}
             totalPages={displayTotalPages}
           />

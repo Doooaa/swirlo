@@ -37,10 +37,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import Search from "./pages/Search/Search.jsx";
 import ProductsContextProvider from "./context/ProductsContext.jsx";
-import CategoryProducts from "./pages/CategoryProducts/CategoryProducts.jsx";
+import FavoritesContextProvider from "./context/FavoritesContext.jsx";
 import ArrowUp from "../src/components/ArrowUp/ArrowUp.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
-
+import { OrdersContextProvider } from "./context/OrdersContext.jsx";
 // ^ routing setup
 const router = createBrowserRouter([
   {
@@ -81,7 +81,18 @@ const router = createBrowserRouter([
             <Products />
           </Suspense>
         ),
+        children: [
+          {
+            path: ":categoryName",
+            element: (
+              <Suspense fallback={<LoadingSpinner />}>
+                <Products />
+              </Suspense>
+            ),
+          },
+        ],
       },
+
       { path: "login", element: <Login></Login> },
       { path: "register", element: <Register></Register> },
       { path: "favorites", element: <Favorites></Favorites> },
@@ -92,9 +103,40 @@ const router = createBrowserRouter([
         path: "order-confirmation/:id",
         element: <OrderConfirmation></OrderConfirmation>,
       },
+<<<<<<< HEAD
       { path: "menu-items", element: <Products></Products> },
       { path: "menu-items/:id", element: <ProductDetails></ProductDetails> },
       { path: "menu-items/:category", element: <CategoryProducts /> },
+=======
+      {
+        path: "menu-items/:categoryName/:id",
+        element: <ProductDetails></ProductDetails>,
+      },
+   
+
+      // ^ dashboard
+      {
+        path: "dashboard",
+        element: <Dashboard></Dashboard>,
+        children: [
+          {
+            index: true,
+            element: <DashboardHome></DashboardHome>,
+          },
+          {
+            path: "categories",
+            element: <DashboardCategories></DashboardCategories>,
+          },
+          {
+            path: "menu-items",
+            element: <DashboardProducts></DashboardProducts>,
+          },
+          { path: "coupons", element: <DashboardCoupons></DashboardCoupons> },
+          { path: "orders", element: <DashboardOrders></DashboardOrders> },
+          { path: "admins", element: <DashboardAdmins></DashboardAdmins> },
+        ],
+      },
+>>>>>>> bff5c8820364a90b31c4147265627c281bc16712
       { path: "*", element: <NotFound></NotFound> },
     ],
   },
@@ -112,17 +154,19 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
           <CartContextProvider>
-            {/* <FavoritesContextProvider> */}
-            <CategoriesContextProvider>
-              <ProductsContextProvider>
-                <ToastContainer />
-                <ArrowUp />
-                {/* <Toaster position="top-right" reverseOrder={false} /> */}
-                <RouterProvider router={router} />
-              </ProductsContextProvider>
-            </CategoriesContextProvider>
 
-            {/* </FavoritesContextProvider> */}
+            <FavoritesContextProvider>
+              <CategoriesContextProvider>
+                <ProductsContextProvider>
+                  <OrdersContextProvider>
+                    <ToastContainer />
+                      <ArrowUp />
+                  {/* <Toaster position="top-right" reverseOrder={false} /> */}
+                      <RouterProvider router={router} />
+                   </OrdersContextProvider>
+                </ProductsContextProvider>
+              </CategoriesContextProvider>
+            </FavoritesContextProvider>
           </CartContextProvider>
         </AuthContextProvider>
       </QueryClientProvider>

@@ -1,31 +1,69 @@
 import { Typography, Box, IconButton, Button } from "@mui/material";
 import Review from "../../components/Review/Review";
 import RelatedProducts from "../../components/RelatedProducts/RelatedProducts";
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import { useProductsContext } from "../../context/ProductsContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { red } from "@mui/material/colors";
+import { useFavoritesContext } from "../../context/FavoritesContext";
+import { useCart } from "../../context/CartContext";
 
 export default function ProductDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const { getProductDetails } = useProductsContext();
   const { data: product, isLoading, isError, error } = getProductDetails(id);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [favorited, setFavorited] = useState(false);
+  const { addToCart } = useCart();
+  const { addToFav, removeFromFav, isFavorited } = useFavoritesContext();
+
+  useEffect(() => {
+    if (id) {
+      setFavorited(isFavorited(id));
+    }
+  }, [id, isFavorited]);
 
   if (isLoading) return <LoadingSpinner />;
-  if (isError) return toast.error(`Error: ${error.message}`);
-  if (!product.data[0]) return toast.error(`product Not Found`);
+
+  if (isError) {
+    toast.error(`Error: ${error.message}`);
+    return null;
+  }
+
+  if (!product?.data?.[0]) {
+    toast.error(`Product Not Found`);
+    return null;
+  }
 
   const prd = product.data[0];
 
-  const handleFavoriteClick = () => {
-    setIsFavorited(!isFavorited);
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation();
+    if (isFavorited(id)) {
+      removeFromFav(id);
+      setFavorited(false);
+    } else {
+      addToFav(id);
+      setFavorited(true);
+    }
+  };
+  // check user is logged ?
+  const user = localStorage.getItem("user");
+
+  // add to cart
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+    toast.success("item added to cart successfully");
+    addToCart(prd._id);
   };
 
   console.log(product);
@@ -97,11 +135,11 @@ export default function ProductDetails() {
 
             {/* Add to Fav */}
             <IconButton onClick={handleFavoriteClick}>
-              {isFavorited ? (
+              {favorited ? (
                 <FavoriteIcon sx={{ fontSize: "2.5rem", color: red[800] }} />
               ) : (
                 <FavoriteBorderOutlinedIcon
-                  sx={{ fontSize: "2.5rem", color: "var( --primary)" }}
+                  sx={{ fontSize: "2.5rem", color: "var(--primary)" }}
                 />
               )}
             </IconButton>
@@ -147,10 +185,11 @@ export default function ProductDetails() {
               fontFamily: "Playpen Sans Hebrew",
             }}
           >
-            Price: {prd.price}
+            Price: {prd.price} EGP
           </Typography>
 
           <Button
+            onClick={handleAddToCart}
             sx={{
               width: { xs: "80%", sm: "80%" },
               p: 2,
@@ -179,9 +218,17 @@ export default function ProductDetails() {
       <Review></Review>
       <Box sx={{ maxWidth: "1200px", mx: "auto", px: { xs: 2, md: 6 } }}>
         <RelatedProducts
-          categoryId={"6812879bbcafe5c8e6084e62"}
-          currentProductId={"6830e8a24b950461489ae1ca"}
-          onProductClick={(id) => navigate(`/menu-items/${id}`)}
+        
+          categoryId={prd.categoryID}
+          currentProductId={prd._id}
+          // onProductClick={(prd) => {
+          //   navigate(`/menu-items/${prd}`);
+          // }}
+          onProductClick={(categoryName, productId) => {
+            navigate(
+              `/menu-items/${encodeURIComponent(categoryName)}/${productId}`
+            );
+          }}
         />
       </Box>
     </Box>

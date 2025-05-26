@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { login, logout, register, getCurrentUser } from "../services/authApi";
+import { login, logout, register, getCurrentUser , PostUserByGoogle} from "../services/authApi";
 
 const AuthContext = createContext();
 
@@ -59,15 +59,22 @@ export default function AuthProvider({ children }) {
     },
   });
 
-  const handleLoginSuccess = (decoded, token, navigate) => {
+const handleLoginSuccess = async (decoded, token, navigate) => {
+  try {
     setUserState({
       name: decoded.name,
       email: decoded.email,
       picture: decoded.picture,
       token,
     });
+    await PostUserByGoogle({ token });
+    localStorage.setItem("user",  JSON.stringify(decoded));
     navigate("/");
-  };
+  } catch (error) {
+    console.error("Error during login:", error);
+  }
+};
+
 
   const handleLogout = (navigate) => {};
 

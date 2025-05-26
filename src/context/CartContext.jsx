@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, use, useContext, useEffect, useMemo, useState } from "react";
-import { editQuantity, getCartItems, removeCart } from "../services/cartApi";
+import { editQuantity, getCartItems, removeCart, addToCartApi } from "../services/cartApi";
+import { toast } from "react-toastify";
 // import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 // import { createContext, useContext, useEffect, useState } from "react";
 // import { editQuantity, getCartItems, removeCart } from "../services/cartApi";
@@ -55,6 +56,14 @@ export default function CartContextProvider({ children }) {
     }
   };
 
+  // Add to Cart
+  const addToCartMutation = useMutation({
+    mutationFn: (productId) => addToCartApi(productId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["cartItems"]);
+    },
+  });
+
   return (
     <CartContext.Provider
       value={{
@@ -65,6 +74,7 @@ export default function CartContextProvider({ children }) {
         page,
         setPage,
         handleQuantity,
+        addToCart: addToCartMutation.mutate, 
       }}
     >
       {children}

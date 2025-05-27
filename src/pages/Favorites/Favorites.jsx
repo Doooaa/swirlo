@@ -32,6 +32,7 @@ import favoritesServices from "../../services/favorites";
 import PaginationComponent from "../../components/Pagination/PaginationComp";
 import AboutBg from "../../components/AboutSec/AboutBg";
 import favoritesImg from "../../assets/favorites.jpg";
+import { useCart } from "../../context/CartContext";
 
 const Favorites = () => {
   const queryClient = useQueryClient();
@@ -40,6 +41,8 @@ const Favorites = () => {
 
   const user = localStorage.getItem("user");
 
+    const { addToCart } = useCart();
+  
   const {
     data: { favorites = [], totalPages } = {},
     isLoading,
@@ -84,6 +87,18 @@ const Favorites = () => {
     },
   });
 
+
+  // Handle Add To Cart
+  const handleAddToCart = (id) => {
+    if (!user) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+    toast.success("item added to cart successfully");
+    addToCart(id);
+  };
+
+  
   if (user && (isLoading || isRemoving || isClearing))
     return <LoadingSpinner></LoadingSpinner>;
 
@@ -356,6 +371,7 @@ const Favorites = () => {
                           {item.price.toFixed(2)} EGP
                         </Typography>
                         <Button
+                          onClick={() => handleAddToCart(item._id)}
                           size="small"
                           color="primary"
                           variant="contained"
